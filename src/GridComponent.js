@@ -1,19 +1,33 @@
 import React from 'react';
 import './GridComponent.css';
+import { Link } from 'react-router-dom';
 
 const GridComponent = ({ rows, columns }) => {
-    const totalCells = rows * columns;
-    const cells = Array.from({ length: totalCells }, (_, i) => i);
-
     return (
         <div 
-            className="grid-container" 
-            style={{ '--rows': rows, '--columns': columns }}
+            className="grid-container"
+            style={{"--rows": rows, "--columns": columns }}
         >
-            {cells.map((cell) => (
-                <div key={cell} className="grid-item">
-                    {(Math.floor((cell) / columns) + 1) * 100 /* Point value */} 
-                </div>
+            {Array.from( { length: rows }).map((_, rowIndex) => (
+                <React.Fragment key={rowIndex}>
+                    {Array.from({ length: columns }).map((_, colIndex) => (
+                        <div
+                            key={`${rowIndex}-${colIndex}`}
+                            className="grid-item"
+                        >
+                            {rowIndex === 0 ? (
+                                <span className="header">Header {colIndex + 1}</span>
+                            ) : (
+                                <Link
+                                    to={`/page/${rowIndex}/${colIndex}`}
+                                    className="button"
+                                >
+                                    {rowIndex * 100}
+                                </Link>
+                            )}
+                        </div>
+                    ))}
+                </React.Fragment>
             ))}
         </div>
     );

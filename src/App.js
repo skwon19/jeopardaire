@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import GridComponent from './GridComponent';
 import React from "react";
@@ -16,26 +15,15 @@ const PageView = () => {
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
-    <div>
-      <h1>Jeopardaire</h1>
-      <GridComponent rows={5} columns={4} />
-    </div>
+    <Router>
+      <div>
+        <h1>Jeopardaire</h1>
+        <Routes>
+          <Route path="/" element={<GridComponent rows={6} columns={4} />} />
+          <Route path="/page/:row/:col" element={<PageView />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
