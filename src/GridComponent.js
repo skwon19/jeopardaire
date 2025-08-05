@@ -2,7 +2,7 @@ import React from 'react';
 import './GridComponent.css';
 import { Link } from 'react-router-dom';
 
-const GridComponent = ({ rows, columns }) => {
+const GridComponent = ({ rows, columns, headers }) => {
     return (
         <div 
             className="grid-container"
@@ -16,7 +16,9 @@ const GridComponent = ({ rows, columns }) => {
                             className="grid-item"
                         >
                             {rowIndex === 0 ? (
-                                <span className="header">Header {colIndex + 1}</span>
+                                <span className="header">
+                                    {headers[colIndex] || `Header ${colIndex + 1}`}
+                                </span>
                             ) : (
                                 <Link
                                     to={`/page/${rowIndex}/${colIndex}`}
