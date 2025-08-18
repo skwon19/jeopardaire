@@ -3,6 +3,7 @@
     grid-template-columns: repeat(var(--columns), 1fr); /* --columns will be passed via style prop, equal width */
     grid-template-rows: repeat(var(--rows), 1fr); /* --rows will be pased via style prop */
     gap: 10px; /* Spacing btwn grid items */
+    margin-bottom: 32px;
 }
 
 .grid-item {

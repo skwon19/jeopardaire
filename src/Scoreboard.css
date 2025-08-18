@@ -1,0 +1,31 @@
+.scoreboard {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 2rem;
+}
+
+.scoreboard-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+.scoreboard-cell--active {
+    background: #ffe066;
+    border: 2px solid #ffae00;
+}
+
+.scoreboard-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.scoreboard-score {
+    font-size: 1.2em;
+    color: #0074d9;
+}
