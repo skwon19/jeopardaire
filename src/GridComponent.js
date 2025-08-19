@@ -21,7 +21,7 @@ const GridComponent = ({ rows, columns, headers }) => {
                                 </span>
                             ) : (
                                 <Link
-                                    to={`/page/${rowIndex}/${colIndex}`}
+                                    to={`/question/${rowIndex}/${colIndex}`}
                                     className="button"
                                 >
                                     {rowIndex * 100}
