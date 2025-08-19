@@ -3,18 +3,24 @@ import GridComponent from './GridComponent';
 import GridPage from './GridPage';
 import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
 
 function App() {
   const [headers, setHeaders] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [players, setPlayers] = useState([]);
-  const [scores, setScores] = useState(Array(players.length).fill(0));
-  const [currentPlayer, setCurrentPlayer] = useState(0);
-
-  // const scores = Array(players.length).fill(0); // Initialize scores for each player
-  // let currentPlayer = 0;
+  const [players, setPlayers] = useState(() => {
+    const saved = localStorage.getItem("players");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [scores, setScores] = useState(() => {
+    const saved = localStorage.getItem("scores");
+    return saved ? JSON.parse(saved) : Array(players.length).fill(0);
+  });
+  const [currentPlayer, setCurrentPlayer] = useState(() => {
+  const saved = localStorage.getItem("currentPlayer");
+  return saved ? JSON.parse(saved) : 0;
+});
 
   useEffect(() => {
     const fetchData = async() => {
@@ -27,11 +33,17 @@ function App() {
     fetchData();
   }, []);
 
-  // Reset scores when players change
   useEffect(() => {
-    setScores(Array(players.length).fill(0));
-    setCurrentPlayer(0);
+    localStorage.setItem("players", JSON.stringify(players));
   }, [players]);
+
+  useEffect(() => {
+    localStorage.setItem("scores", JSON.stringify(scores));
+  }, [scores]);
+
+  useEffect(() => {
+    localStorage.setItem("currentPlayer", JSON.stringify(currentPlayer));
+  }, [currentPlayer]);
 
   return (
     <Router>
