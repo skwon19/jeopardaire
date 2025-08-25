@@ -1,10 +1,8 @@
 import './App.css';
-import GridComponent from './GridComponent';
 import GridPage from './GridPage';
 import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
 import React, { use, useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
 
 function App() {
   const [headers, setHeaders] = useState([]);
@@ -22,6 +20,9 @@ function App() {
     return saved ? JSON.parse(saved) : 0;
   });
 
+  const [view, setView] = useState("entry"); // "entry", "grid", "question"
+  const [questionCoords, setQuestionCoords] = useState({ row: null, col: null });
+
   useEffect(() => {
     const fetchData = async() => {
       const response = await fetch("/questions.json");
@@ -35,8 +36,6 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("players", JSON.stringify(players));
-    setScores(Array(players.length).fill(0));
-    setCurrentPlayer(0);
   }, [players]);
 
   useEffect(() => {
@@ -47,36 +46,74 @@ function App() {
     localStorage.setItem("currentPlayer", JSON.stringify(currentPlayer));
   }, [currentPlayer]);
 
+  // Decide which view to show based on state
+  useEffect(() => {
+    if (players.length === 0) {
+      setView("entry");
+    } else if (questionCoords.row !== null && questionCoords.col !== null) {
+      setView("question");
+    } else {
+      setView("grid");
+    }
+  }, [players, questionCoords]);
+
+  // Handlers to switch views
+  const handleQuestionSelect = (row, col) => {
+    setQuestionCoords({ row, col });
+    setView("question");
+  };
+
+  const handleQuestionClose = () => {
+    const nextPlayer = (currentPlayer + 1) % players.length;
+    setCurrentPlayer(nextPlayer);
+    setQuestionCoords({ row: null, col: null });
+    setView("grid");
+  };
+
+  // Clear game, for debugging
+  const clearGame = () => {
+    setPlayers([]);
+    setScores([]);
+    setCurrentPlayer(0);
+  }
+
+  const initializePlayers = (players) => {
+    setPlayers(players);
+    setScores(Array(players.length).fill(0));
+    setCurrentPlayer(0);
+  }
+
   return (
-    <Router>
-      <div>
-        <h1>Jeopardaire</h1>
-        <Routes>
-          <Route path="/" element={<PlayerEntryPage onPlayersSet={setPlayers} />} />
-          <Route path="/grid" element={
-            <GridPage 
-              rows={6} 
-              columns={headers.length} 
-              headers={headers} 
-              players={players} 
-              scores={scores} 
-              currentPlayer={currentPlayer}
-              setPlayers={setPlayers}
-            />
-          } />
-          <Route path="/question/:row/:col" element={
-            <QuestionPage 
-              questions={questions}
-              scores={scores}
-              setScores={setScores}
-              currentPlayer={currentPlayer}
-              setCurrentPlayer={setCurrentPlayer}
-              players={players}
-            />
-          } />
-        </Routes>
-      </div>
-    </Router>
+    <div>
+      <h1>Jeopardaire</h1>
+      {view === "entry" && (
+        <PlayerEntryPage initializePlayers={initializePlayers} />
+      )}
+      {view === "grid" && (
+        <GridPage
+          rows={6}
+          columns={headers.length}
+          headers={headers}
+          players={players}
+          scores={scores}
+          currentPlayer={currentPlayer}
+          onQuestionSelect={handleQuestionSelect}
+          clearGame={clearGame}
+        />
+      )}
+      {view === "question" && (
+        <QuestionPage
+          questions={questions}
+          scores={scores}
+          setScores={setScores}
+          currentPlayer={currentPlayer}
+          players={players}
+          row={questionCoords.row}
+          col={questionCoords.col}
+          onClose={handleQuestionClose}
+        />
+      )}
+    </div>
   );
 }
 

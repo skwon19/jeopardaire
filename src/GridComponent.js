@@ -1,8 +1,7 @@
 import React from 'react';
 import './GridComponent.css';
-import { Link } from 'react-router-dom';
 
-const GridComponent = ({ rows, columns, headers }) => {
+const GridComponent = ({ rows, columns, headers, onQuestionSelect }) => {
     return (
         <div 
             className="grid-container"
@@ -14,18 +13,18 @@ const GridComponent = ({ rows, columns, headers }) => {
                         <div
                             key={`${rowIndex}-${colIndex}`}
                             className="grid-item"
+                            onClick={
+                                rowIndex !== 0
+                                    ? () => onQuestionSelect(rowIndex, colIndex) // row 0 is headers
+                                    : undefined
+                            }
                         >
                             {rowIndex === 0 ? (
-                                <span className="header">
+                                <span className="header" >
                                     {headers[colIndex] || `Header ${colIndex + 1}`}
                                 </span>
                             ) : (
-                                <Link
-                                    to={`/question/${rowIndex}/${colIndex}`}
-                                    className="button"
-                                >
-                                    {rowIndex * 100}
-                                </Link>
+                                <span className="button">{rowIndex * 100}</span>
                             )}
                         </div>
                     ))}

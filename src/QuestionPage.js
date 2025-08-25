@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import './QuestionPage.css';
 import Scoreboard from "./Scoreboard";
 
@@ -7,19 +6,15 @@ const QuestionPage = ({
     questions, 
     scores, 
     setScores, 
-    currentPlayer, 
-    setCurrentPlayer, 
-    players 
+    currentPlayer,
+    players,
+    row,
+    col,
+    onClose
 }) => {
-    const { row, col } = useParams();
-    const navigate = useNavigate();
-    // Convert row and col to numbers
-    const rowIndex = parseInt(row, 10) - 1; // -1 because row 0 is headers
-    const colIndex = parseInt(col, 10);
-
     // Defensive: check if data exists
-    const category = questions[colIndex];
-    const questionObj = category?.questions?.[rowIndex];
+    const category = questions[col];
+    const questionObj = category?.questions?.[row-1]; // row 0 is header
 
     const [selected, setSelected] = useState(null);
     const [feedback, setFeedback] = useState("");
@@ -84,9 +79,7 @@ const QuestionPage = ({
                         className="back-to-grid-btn"
                         style={{ marginTop: "1.5rem" }}
                         onClick={() => {
-                            const nextPlayer = (currentPlayer + 1) % players.length;
-                            setCurrentPlayer(nextPlayer);
-                            navigate("/grid");
+                            onClose();
                         }}
                     >
                         Back to Grid

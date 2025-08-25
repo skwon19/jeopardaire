@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-const PlayerEntryPage = ({ onPlayersSet }) => {
+const PlayerEntryPage = ({ initializePlayers }) => {
     const [players, setPlayers] = useState(["", ""]); // Start with 2 players
     const [error, setError] = useState("");
-    const navigate = useNavigate();
 
     const handleChange = (idx, value) => {
         const updated = [...players];
@@ -22,8 +20,7 @@ const PlayerEntryPage = ({ onPlayersSet }) => {
             return;
         }
         setError("");
-        onPlayersSet(filtered);
-        navigate("/grid");
+        initializePlayers(filtered);
     };
 
     return (
