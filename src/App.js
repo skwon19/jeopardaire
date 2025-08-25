@@ -18,9 +18,9 @@ function App() {
     return saved ? JSON.parse(saved) : Array(players.length).fill(0);
   });
   const [currentPlayer, setCurrentPlayer] = useState(() => {
-  const saved = localStorage.getItem("currentPlayer");
-  return saved ? JSON.parse(saved) : 0;
-});
+    const saved = localStorage.getItem("currentPlayer");
+    return saved ? JSON.parse(saved) : 0;
+  });
 
   useEffect(() => {
     const fetchData = async() => {
@@ -35,6 +35,8 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem("players", JSON.stringify(players));
+    setScores(Array(players.length).fill(0));
+    setCurrentPlayer(0);
   }, [players]);
 
   useEffect(() => {
@@ -58,7 +60,8 @@ function App() {
               headers={headers} 
               players={players} 
               scores={scores} 
-              currentPlayer={currentPlayer} 
+              currentPlayer={currentPlayer}
+              setPlayers={setPlayers}
             />
           } />
           <Route path="/question/:row/:col" element={
