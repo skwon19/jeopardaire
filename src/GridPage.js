@@ -10,7 +10,8 @@ const GridPage = ({
     scores, 
     currentPlayer,
     onQuestionSelect, 
-    clearGame
+    clearGame,
+    seenQuestions
 }) => {
     return (
         <div className="grid-page">
@@ -19,6 +20,7 @@ const GridPage = ({
                 columns={columns} 
                 headers={headers}
                 onQuestionSelect={onQuestionSelect}
+                seenQuestions={seenQuestions}
             />
             <Scoreboard players={players} scores={scores} currentPlayer={currentPlayer} />
             <button type="button" onClick={clearGame}>New Game</button>
