@@ -27,8 +27,15 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [view, setView] = useState("entry"); // "entry", "grid", "question"
-  const [questionCoords, setQuestionCoords] = useState({ row: null, col: null });
+  const [view, setView] = useState(() => {
+    const saved = localStorage.getItem("view");
+    return saved ? JSON.parse(saved) : "entry"; // "entry", "grid", "question"
+  });
+
+  const [questionCoords, setQuestionCoords] = useState(() => {
+    const saved = localStorage.getItem("questionCoords");
+    return saved ? JSON.parse(saved) : { row: null, col: null };
+  });
 
   useEffect(() => {
     const fetchData = async() => {
@@ -63,6 +70,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem("seenQuestions", JSON.stringify(seenQuestions));
   }, [seenQuestions]);
+
+  useEffect(() => {
+    localStorage.setItem("view", JSON.stringify(view));
+  }, [view]);
+
+  useEffect(() => {
+    localStorage.setItem("questionCoords", JSON.stringify(questionCoords));
+  }, [questionCoords]);
 
   // Decide which view to show based on state
   useEffect(() => {
