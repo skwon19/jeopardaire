@@ -49,6 +49,23 @@ const addTwoPlayers = () => {
   fireEvent.click(screen.getByText(/Start Game/i));
 }
 
+const refreshPage = async () => {
+  // Unmount the app (simulating a page reload) and then remount it
+  const { unmount } = render(<App />);
+  unmount();
+  cleanup();
+  await act(() => {
+    render(<App />);
+  });
+}
+
+const expectPlayerScore = (playerName, expectedScore) => {
+  expect(screen.getByText(playerName)).toBeInTheDocument();
+  const player = screen.getByText(playerName);
+  const playerScore = player.nextElementSibling.textContent.trim();
+  expect(playerScore).toBe(expectedScore);
+}
+
 test("fetch mock works", async () => {
   const response = await fetch("/questions.json");
   const data = await response.json();
@@ -82,16 +99,9 @@ test("add players, answer question correctly, update score, and grid updates", a
   // Back to grid
   fireEvent.click(screen.getByText(/Back to Grid/i));
 
-  // Player 1's score should be 200, player 2's turn
-  expect(screen.getByText(/Alice/)).toBeInTheDocument();
-  const alice = screen.getByText(/Alice/);
-  const aliceScore = alice.nextElementSibling.textContent.trim();
-  expect(aliceScore).toBe("200");
-
-  expect(screen.getByText(/Bob/)).toBeInTheDocument();
-  const bob = screen.getByText(/Bob/);
-  const bobScore = bob.nextElementSibling.textContent.trim();
-  expect(bobScore).toBe("0");
+  // Alice's score should be 200
+  expectPlayerScore("Alice", "200");
+  expectPlayerScore("Bob", "0");
 
   const seen200 = Array.from(document.querySelectorAll(".grid-item.seen"))
     .find(el => el.textContent.trim() === "200"); // Question is marked seen
@@ -125,15 +135,8 @@ test("answer question incorrectly, update score", async () => {
   // Should show "incorrect" and update score
   await screen.findByText(/incorrect/i);
 
-  expect(screen.getByText(/Alice/)).toBeInTheDocument();
-  const alice = screen.getByText(/Alice/);
-  const aliceScore = alice.nextElementSibling.textContent.trim();
-  expect(aliceScore).toBe("-300");
-
-  expect(screen.getByText(/Bob/)).toBeInTheDocument();
-  const bob = screen.getByText(/Bob/);
-  const bobScore = bob.nextElementSibling.textContent.trim();
-  expect(bobScore).toBe("0");
+  expectPlayerScore("Alice", "-300");
+  expectPlayerScore("Bob", "0");
 
   expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
@@ -165,27 +168,17 @@ test("answer question, back to grid, game state persists after reload", async ()
   // Back to grid
   fireEvent.click(screen.getByText(/Back to Grid/i));
 
-  // Unmount the app (simulating a page reload) and then remount it
-  const { unmount } = render(<App />);
-  unmount();
-  cleanup();
-  await act(() => {
-    render(<App />);
-  });
+  await refreshPage();
 
   // Check that the state is restored
   expect(screen.getByText(/Alice/)).toBeInTheDocument();
   expect(screen.getByText(/Bob/)).toBeInTheDocument();
 
   // Alice's score should still be -300
-  const alice = screen.getByText(/Alice/);
-  const aliceScore = alice.nextElementSibling.textContent.trim();
-  expect(aliceScore).toBe("-300");
+  expectPlayerScore("Alice", "-300");
 
   // Bob's score should still be 0
-  const bob = screen.getByText(/Bob/);
-  const bobScore = bob.nextElementSibling.textContent.trim();
-  expect(bobScore).toBe("0");
+  expectPlayerScore("Bob", "0");
 
   // Bob's turn now
   expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
@@ -208,14 +201,79 @@ test("refresh while on question page before answering question", async () => {
 
   expect(screen.getByText("Q4")).toBeInTheDocument();
 
-  // Unmount the app (simulating a page reload) and then remount it
-  const { unmount } = render(<App />);
-  unmount();
-  cleanup();
+  await refreshPage();
+
+  // Should still be on the question page
+  expect(screen.getByText("Q4")).toBeInTheDocument();
+});
+
+test("refresh while on question page after answering question", async () => {
   await act(() => {
     render(<App />);
   });
 
+  addTwoPlayers();
+  await screen.findByText((content) => content.includes("2000s Pop"));
+  const gridItems = screen.getAllByText("400");
+  fireEvent.click(gridItems[0]);
+  expect(screen.getByText("Q4")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("A4")); // correct answer
+
+  // Should show "correct"
+  await screen.findByText(/correct/i);
+  // Alice's score should be 400, still her turn
+  expectPlayerScore("Alice", "400");
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+
+  expect(screen.getByText("A4").closest(".option-correct")).toBeInTheDocument();
+
+  expectPlayerScore("Bob", "0");
+
+  await refreshPage();
+
   // Should still be on the question page
   expect(screen.getByText("Q4")).toBeInTheDocument();
+  // Should still show "correct"
+  await screen.findByText(/correct/i);
+  expect(screen.getByText("A4").closest(".option-correct")).toBeInTheDocument();
+
+  // Alice's score should be 400, still her turn
+  expectPlayerScore("Alice", "400");
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+
+  expectPlayerScore("Bob", "0");
+
+});
+
+test("two turns", async () => {
+  await act(() => {
+    render(<App />);
+  });
+
+  addTwoPlayers();
+
+  await screen.findByText((content) => content.includes("2000s Pop"));
+  const gridItems400 = screen.getAllByText("400");
+  fireEvent.click(gridItems400[0]);
+  expect(screen.getByText("Q4")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("C4")); // incorrect answer
+  await screen.findByText(/incorrect/i);
+
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+  const gridItems100 = screen.getAllByText("100");
+  fireEvent.click(gridItems100[0]);
+  expect(screen.getByText("Q1")).toBeInTheDocument();
+
+  // const feedback = screen.getAllByText(/CORRECT|INCORRECT/i);
+  // expect(feedback.length).toBe(0); // No feedback yet
+
+  const feedback = screen.queryByText(/CORRECT|INCORRECT/i)
+  expect(feedback).toBeNull()
+
+  fireEvent.click(screen.getByText("B1")); // correct answer
+  await screen.findByText(/correct/i);
+
+  expectPlayerScore("Alice", "-400");
+  expectPlayerScore("Bob", "100");
+
 });

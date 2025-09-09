@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import './QuestionPage.css';
 import Scoreboard from "./Scoreboard";
 
@@ -10,14 +9,15 @@ const QuestionPage = ({
     players,
     row,
     col,
-    onClose
+    onClose,
+    selectedAnswers,
+    setSelectedAnswers,
+    feedbacks,
+    setFeedbacks
 }) => {
     // Defensive: check if data exists
     const category = questions[col];
     const questionObj = category?.questions?.[row-1]; // row 0 is header
-
-    const [selected, setSelected] = useState(null);
-    const [feedback, setFeedback] = useState("");
 
     if (!category || !questionObj) {
         return <div>Question not found</div>;
@@ -27,17 +27,27 @@ const QuestionPage = ({
     const correctAnswer = questionObj.answer.charCodeAt(0) - 65; // "A" -> 0, etc.
 
     const handleSelect = (idx) => {
-        if (selected !== null) return; // Prevent answering multiple times
-        setSelected(idx);
+        if (selectedAnswers[row-1][col] !== null) return; // Prevent answering multiple times
+        
+        const updatedSelected = selectedAnswers.map(row => [...row]);
+        updatedSelected[row - 1][col] = idx; // row 0 is headers
+        setSelectedAnswers(updatedSelected);
 
         if (idx === correctAnswer) {
-            setFeedback("CORRECT");
+            const updatedFeedback = feedbacks.map(row => [...row]);
+            updatedFeedback[row - 1][col] = "CORRECT"; // row 0 is headers
+            setFeedbacks(updatedFeedback);
+
+
             // Update score for current player
             const newScores = [...scores];
             newScores[currentPlayer] += row * 100;
             setScores(newScores);
         } else {
-            setFeedback("INCORRECT");
+            const updatedFeedback = feedbacks.map(row => [...row]);
+            updatedFeedback[row - 1][col] = "INCORRECT"; // row 0 is headers
+            setFeedbacks(updatedFeedback);
+
             const newScores = [...scores];
             newScores[currentPlayer] -= row * 100;
             setScores(newScores);
@@ -55,25 +65,25 @@ const QuestionPage = ({
                         key={idx} 
                         className={
                             "option" + 
-                            (selected === idx 
+                            (selectedAnswers[row-1][col] === idx 
                                 ? idx === correctAnswer
                                     ? " option-correct"
                                     : " option-incorrect"
-                                : selected !== null && idx === correctAnswer
+                                : selectedAnswers[row-1][col] !== null && idx === correctAnswer
                                 ? " option-correct"
                                 : "")
                         }
                         onClick={() => handleSelect(idx)}
-                        style={{ cursor: selected === null ? "pointer" : "default" }}
+                        style={{ cursor: selectedAnswers[row-1][col] === null ? "pointer" : "default" }}
                     >
                         <span className="option-label">{String.fromCharCode(65 + idx)}.</span> {option}
                     </div>
                 ))}
             </div>
-            {selected !== null && (
+            {selectedAnswers[row-1][col] !== null && (
                 <>
-                    <div className={`feedback ${feedback === "CORRECT" ? "correct" : "incorrect"}`}>
-                        {feedback}
+                    <div className={`feedback ${feedbacks[row-1][col] === "CORRECT" ? "correct" : "incorrect"}`}>
+                        {feedbacks[row-1][col]}
                     </div>
                     <button
                         className="back-to-grid-btn"

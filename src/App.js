@@ -37,6 +37,15 @@ function App() {
     return saved ? JSON.parse(saved) : { row: null, col: null };
   });
 
+  const [selectedAnswers, setSelectedAnswers] = useState(() => { // selected answer index for each question
+      const saved = localStorage.getItem("selectedAnswers");
+      return saved ? JSON.parse(saved) : [];
+  });
+  const [feedbacks, setFeedbacks] = useState(() => { // feedbacks for each question
+      const saved = localStorage.getItem("feedbacks");
+      return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     const fetchData = async() => {
       const response = await fetch("/questions.json");
@@ -48,11 +57,25 @@ function App() {
     fetchData();
   }, []);
 
-  useEffect(() => { // After questions load, if seenQuestions empty, initialize it
-    if (headers.length > 0 && seenQuestions.length === 0) {
-      const defaultSeen = Array.from({ length: numPointVals }, () => new Array(headers.length).fill(false));
-      setSeenQuestions(defaultSeen);
+  useEffect(() => { // After questions load, populate seenQuestions, selectAnswer, feedbacks if empty
+    if (headers.length > 0) {
+      if (seenQuestions.length === 0) {
+        // seenQuestions[row-1][col] gives whether question at (row, col) has been seen (row 0 is headers)
+        const defaultSeen = Array.from({ length: numPointVals }, () => new Array(headers.length).fill(false));
+        setSeenQuestions(defaultSeen);
+      }
+      if (selectedAnswers.length === 0) {
+        // selectedAnswers[row-1][col] gives selected answer index for question at (row, col) if answered
+        const defaultSelected = Array.from({ length: numPointVals }, () => new Array(headers.length).fill(null));
+        setSelectedAnswers(defaultSelected);
+      }
+      if (feedbacks.length === 0) {
+        // feedbacks[row-1][col] gives correctness feedback for question at (row, col) if answered
+        const defaultFeedbacks = Array.from({ length: numPointVals }, () => new Array(headers.length).fill(""));
+        setFeedbacks(defaultFeedbacks);
+      }
     }
+
   }, [headers]);
 
   useEffect(() => {
@@ -78,6 +101,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem("questionCoords", JSON.stringify(questionCoords));
   }, [questionCoords]);
+
+  useEffect(() => {
+      localStorage.setItem("selectedAnswers", JSON.stringify(selectedAnswers));
+  }, [selectedAnswers]);
+
+  useEffect(() => {
+      localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+  }, [feedbacks]);
 
   // Decide which view to show based on state
   useEffect(() => {
@@ -108,6 +139,7 @@ function App() {
     const nextPlayer = (currentPlayer + 1) % players.length;
     setCurrentPlayer(nextPlayer);
     setQuestionCoords({ row: null, col: null });
+
     setView("grid");
   };
 
@@ -153,6 +185,10 @@ function App() {
           row={questionCoords.row}
           col={questionCoords.col}
           onClose={handleQuestionClose}
+          selectedAnswers={selectedAnswers}
+          setSelectedAnswers={setSelectedAnswers}
+          feedbacks={feedbacks}
+          setFeedbacks={setFeedbacks}
         />
       )}
     </div>
