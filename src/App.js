@@ -10,6 +10,7 @@ function App() {
 
   const [headers, setHeaders] = useState([]);
   const [questions, setQuestions] = useState([]);
+
   const [players, setPlayers] = useState(() => {
     const saved = localStorage.getItem("players");
     return saved ? JSON.parse(saved) : [];

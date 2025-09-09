@@ -49,6 +49,17 @@ const addTwoPlayers = () => {
   fireEvent.click(screen.getByText(/Start Game/i));
 }
 
+const addThreePlayers = () => {
+  fireEvent.click(screen.getByText(/Add Player/i));
+
+  const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
+  fireEvent.change(playerInputs[0], { target: { value: "Alice" } });
+  fireEvent.change(playerInputs[1], { target: { value: "Bob" } });
+  fireEvent.change(playerInputs[2], { target: { value: "Carlos" } });
+
+  fireEvent.click(screen.getByText(/Start Game/i));
+}
+
 const refreshPage = async () => {
   // Unmount the app (simulating a page reload) and then remount it
   const { unmount } = render(<App />);
@@ -245,7 +256,7 @@ test("refresh while on question page after answering question", async () => {
 
 });
 
-test("two turns", async () => {
+test("two players, two turns", async () => {
   await act(() => {
     render(<App />);
   });
@@ -260,12 +271,10 @@ test("two turns", async () => {
   await screen.findByText(/incorrect/i);
 
   fireEvent.click(screen.getByText(/Back to Grid/i));
+  expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
   const gridItems100 = screen.getAllByText("100");
   fireEvent.click(gridItems100[0]);
   expect(screen.getByText("Q1")).toBeInTheDocument();
-
-  // const feedback = screen.getAllByText(/CORRECT|INCORRECT/i);
-  // expect(feedback.length).toBe(0); // No feedback yet
 
   const feedback = screen.queryByText(/CORRECT|INCORRECT/i)
   expect(feedback).toBeNull()
@@ -276,4 +285,81 @@ test("two turns", async () => {
   expectPlayerScore("Alice", "-400");
   expectPlayerScore("Bob", "100");
 
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+});
+
+test("three players", async () => {
+  await act(() => {
+    render(<App />);
+  });
+
+  addThreePlayers();
+
+  await screen.findByText((content) => content.includes("2000s Pop"));
+  const gridItems = screen.getAllByText("300");
+  fireEvent.click(gridItems[0]);
+  
+  await screen.findByText("Q3");
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("D3")); // correct answer
+  await screen.findByText(/correct/i);
+  expectPlayerScore("Alice", "300");
+  expectPlayerScore("Bob", "0");
+  expectPlayerScore("Carlos", "0");
+  
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+  // Bob's turn now
+  expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+
+});
+
+test("three players, four turns", async () => {
+  await act(() => {
+    render(<App />);
+  });
+
+  addThreePlayers();
+
+  await screen.findByText((content) => content.includes("2000s Pop"));
+  const gridItems300 = screen.getAllByText("300");
+  fireEvent.click(gridItems300[0]);
+  
+  await screen.findByText("Q3");
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("D3")); // correct answer
+  await screen.findByText(/correct/i);
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+  
+  expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
+  const gridItems100 = screen.getAllByText("100");
+  fireEvent.click(gridItems100[0]);
+
+  await screen.findByText("Q1");
+  fireEvent.click(screen.getByText("A1"));
+  await screen.findByText(/incorrect/i);
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+
+  expect(screen.getByText(/Carlos/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Carlos's turn now
+  const gridItems500 = screen.getAllByText("500");
+  fireEvent.click(gridItems500[0]);
+
+  await screen.findByText("Q5");
+  fireEvent.click(screen.getByText("C5"));
+  await screen.findByText(/correct/i);
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+
+  expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Alice's turn now
+  const gridItems400 = screen.getAllByText("400");
+  fireEvent.click(gridItems400[0]);
+
+  await screen.findByText("Q4");
+  fireEvent.click(screen.getByText("A4"));
+  await screen.findByText(/correct/i);
+  fireEvent.click(screen.getByText(/Back to Grid/i));
+
+  expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
+  expectPlayerScore("Alice", "700");
+  expectPlayerScore("Bob", "-100");
+  expectPlayerScore("Carlos", "500");
 });
