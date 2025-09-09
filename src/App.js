@@ -144,13 +144,6 @@ function App() {
     setView("grid");
   };
 
-  // Clear game, for debugging
-  const clearGame = () => {
-    setPlayers([]);
-    setScores([]);
-    setCurrentPlayer(0);
-  }
-
   const initializePlayers = (players) => {
     setPlayers(players);
     setScores(Array(players.length).fill(0));
@@ -172,7 +165,6 @@ function App() {
           scores={scores}
           currentPlayer={currentPlayer}
           onQuestionSelect={handleQuestionSelect}
-          clearGame={clearGame}
           seenQuestions={seenQuestions}
         />
       )}
