@@ -52,6 +52,11 @@
     color: #dc3545;
 }
 
+.option-invalid {
+    background-color: #ccc !important;
+    color: #888;
+}
+
 .feedback {
     margin-top: 1rem;
     font-size: 1.5rem;

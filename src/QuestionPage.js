@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
+
 import './QuestionPage.css';
 import Scoreboard from "./Scoreboard";
+import LifeLinesComponent from "./LifelinesComponent";
 
 const QuestionPage = ({ 
     questions, 
@@ -13,8 +16,20 @@ const QuestionPage = ({
     selectedAnswers,
     setSelectedAnswers,
     feedbacks,
-    setFeedbacks
+    setFeedbacks,
+    lifelinesUsed,
+    setLifelinesUsed
 }) => {
+
+    const [validAnswer, setValidAnswer] = useState(() => {
+        const saved = localStorage.getItem("validAnswer");
+        return saved ? JSON.parse(saved) : Array(4).fill(true);
+    });
+
+    useEffect(() => {
+        localStorage.setItem("validAnswer", JSON.stringify(validAnswer));
+    }, [validAnswer]);
+
     // Defensive: check if data exists
     const category = questions[col];
     const questionObj = category?.questions?.[row-1]; // row 0 is header
@@ -52,7 +67,37 @@ const QuestionPage = ({
             newScores[currentPlayer] -= row * 100;
             setScores(newScores);
         }
-        
+        setValidAnswer(Array(4).fill(true)); // Reset valid answers for next question
+    }
+
+    const optionTags = (idx) => {
+        if (selectedAnswers[row-1][col] === null) {
+            if (validAnswer[idx]) {
+                return "";
+            } else {
+                return " option-invalid";
+            }
+        } else {
+            if (selectedAnswers[row-1][col] === idx) {
+                if (idx === correctAnswer) {
+                    return " option-correct";
+                } else {
+                    return " option-incorrect";
+                }
+            } else if (idx === correctAnswer) {
+                return " option-correct";
+            } else {
+                return "";
+            }
+        }
+    }
+
+    const invalidateAnswers = (indices) => {
+        const newValid = [...validAnswer];
+        indices.forEach(idx => {
+            newValid[idx] = false;
+        });
+        setValidAnswer(newValid);
     }
 
     return (
@@ -64,14 +109,7 @@ const QuestionPage = ({
                     <div 
                         key={idx} 
                         className={
-                            "option" + 
-                            (selectedAnswers[row-1][col] === idx 
-                                ? idx === correctAnswer
-                                    ? " option-correct"
-                                    : " option-incorrect"
-                                : selectedAnswers[row-1][col] !== null && idx === correctAnswer
-                                ? " option-correct"
-                                : "")
+                            "option" + optionTags(idx)
                         }
                         onClick={() => handleSelect(idx)}
                         style={{ cursor: selectedAnswers[row-1][col] === null ? "pointer" : "default" }}
@@ -96,6 +134,14 @@ const QuestionPage = ({
                     </button>
                 </>
             )}
+            <LifeLinesComponent 
+                correctAnswer={correctAnswer}
+                validAnswer={validAnswer}
+                invalidateAnswers={invalidateAnswers}
+                lifelinesUsed={lifelinesUsed}
+                setLifelinesUsed={setLifelinesUsed}
+                currentPlayer={currentPlayer}
+            />
             <Scoreboard players={players} scores={scores} currentPlayer={currentPlayer} />
         </div>
     );

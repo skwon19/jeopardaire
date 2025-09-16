@@ -39,13 +39,18 @@ function App() {
   });
 
   const [selectedAnswers, setSelectedAnswers] = useState(() => { // selected answer index for each question
-      const saved = localStorage.getItem("selectedAnswers");
-      return saved ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem("selectedAnswers");
+    return saved ? JSON.parse(saved) : [];
   });
   const [feedbacks, setFeedbacks] = useState(() => { // feedbacks for each question
-      const saved = localStorage.getItem("feedbacks");
-      return saved ? JSON.parse(saved) : [];
+    const saved = localStorage.getItem("feedbacks");
+    return saved ? JSON.parse(saved) : [];
   });
+
+  const [lifelinesUsed, setLifelinesUsed] = useState(() => {
+    const saved = localStorage.getItem("lifelinesUsed");
+    return saved ? JSON.parse(saved) : [];
+  })
 
   useEffect(() => {
     const fetchData = async() => {
@@ -110,6 +115,22 @@ function App() {
   useEffect(() => {
       localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
   }, [feedbacks]);
+
+  useEffect(() => {
+      localStorage.setItem("lifelinesUsed", JSON.stringify(lifelinesUsed));
+  }, [lifelinesUsed]);
+
+  useEffect(() => {
+    if (lifelinesUsed.length === 0) { // Set lifelines for each player
+        const defaultLifelines = [];
+        players.forEach(() => {
+            defaultLifelines.push({
+                "50:50": false
+            });
+        });
+        setLifelinesUsed(defaultLifelines);
+    }
+  }, [players]);
 
   // Decide which view to show based on state
   useEffect(() => {
@@ -182,6 +203,8 @@ function App() {
           setSelectedAnswers={setSelectedAnswers}
           feedbacks={feedbacks}
           setFeedbacks={setFeedbacks}
+          lifelinesUsed={lifelinesUsed}
+          setLifelinesUsed={setLifelinesUsed}
         />
       )}
     </div>

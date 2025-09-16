@@ -1,0 +1,17 @@
+.lifeline-container {
+    /* display: flex; */
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.lifeline {
+    margin-top: 16px;
+    border-radius: 8px;
+    border: 2px solid #00008B;
+    padding: 8px 16px;
+}
+
+.lifeline.used {
+    background-color: #ccc !important;
+    color: #888;
+}
