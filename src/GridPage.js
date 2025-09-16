@@ -1,4 +1,3 @@
-import React from "react";
 import GridComponent from "./GridComponent";
 import Scoreboard from "./Scoreboard";
 

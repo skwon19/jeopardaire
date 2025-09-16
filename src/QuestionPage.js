@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import './QuestionPage.css';
 import Scoreboard from "./Scoreboard";
 import LifeLinesComponent from "./LifelinesComponent";

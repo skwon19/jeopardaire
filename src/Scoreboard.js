@@ -1,4 +1,3 @@
-import React from "react";
 import "./Scoreboard.css";
 
 const Scoreboard = ({ players, scores, currentPlayer }) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const PlayerEntryPage = ({ initializePlayers }) => {
     const [players, setPlayers] = useState(["", ""]); // Start with 2 players
