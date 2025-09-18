@@ -325,3 +325,33 @@ test("Lifeline 50:50 persists after page refresh", async () => {
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
+
+test("Lifeline phone-a-friend works correctly", async () => {
+    await act(() => {
+        render(<App />);
+    });
+
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+
+    await screen.findByText("Q3");
+    const lifelineButton = screen.getByText("Phone a Friend (offline)");
+    fireEvent.click(lifelineButton);
+
+    await waitFor(() => { // Greyed out after 1 use
+        expect(lifelineButton).toHaveClass("used");
+    });
+
+    // Answer the question
+    fireEvent.click(screen.getByText("D3"));
+
+    await screen.findByText("CORRECT");
+    expectPlayerScore("Alice", "300");
+    expectPlayerScore("Bob", "0");
+    expectPlayerScore("Carlos", "0");
+
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});

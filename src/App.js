@@ -123,7 +123,8 @@ function App() {
             const defaultLifelines = [];
             players.forEach(() => {
                 defaultLifelines.push({
-                    "50:50": false
+                    "50:50": false,
+                    "phone": false
                 });
             });
             setLifelinesUsed(defaultLifelines);

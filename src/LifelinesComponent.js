@@ -42,6 +42,17 @@ const LifeLinesComponent = ({
             >
                 50:50
             </div>
+            <div
+                className={"lifeline" + (lifelinesUsed[currentPlayer]["phone"] ? " used" : "")}
+                onClick={() => {
+                    if (lifelinesUsed[currentPlayer]["50:50"]) return; // Already used
+                    const newLifelines = {... lifelinesUsed};
+                    newLifelines[currentPlayer]["phone"] = true;
+                    setLifelinesUsed(newLifelines);
+                }}
+            >
+                Phone a Friend (offline)
+            </div>
         </div>
     )
 }
