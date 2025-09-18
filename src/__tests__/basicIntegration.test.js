@@ -41,22 +41,16 @@ beforeEach(() => {
     localStorage.clear();
 });
 
-const addTwoPlayers = () => {
+const addPlayers = (playerNames) => {
+    if (playerNames.length > 2) {
+        for (let i = 0; i < playerNames.length - 2; i++) {
+            fireEvent.click(screen.getByText(/Add Player/i));
+        }
+    }
     const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    fireEvent.change(playerInputs[0], { target: { value: "Alice" } });
-    fireEvent.change(playerInputs[1], { target: { value: "Bob" } });
-
-    fireEvent.click(screen.getByText(/Start Game/i));
-}
-
-const addThreePlayers = () => {
-    fireEvent.click(screen.getByText(/Add Player/i));
-
-    const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    fireEvent.change(playerInputs[0], { target: { value: "Alice" } });
-    fireEvent.change(playerInputs[1], { target: { value: "Bob" } });
-    fireEvent.change(playerInputs[2], { target: { value: "Carlos" } });
-
+    for (let i = 0; i < playerNames.length; i++) {
+        fireEvent.change(playerInputs[i], { target: { value: playerNames[i] } });
+    }
     fireEvent.click(screen.getByText(/Start Game/i));
 }
 
@@ -89,7 +83,7 @@ test("add players, answer question correctly, update score, and grid updates", a
     });
 
     // Add two players
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
 
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -128,7 +122,7 @@ test("answer question incorrectly, update score", async () => {
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
 
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -166,7 +160,7 @@ test("answer question, back to grid, game state persists after reload", async ()
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
     // Click on 2000s Pop for 300 (row 2, col 0)
@@ -205,7 +199,7 @@ test("refresh while on question page before answering question", async () => {
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
@@ -223,7 +217,7 @@ test("refresh while on question page after answering question", async () => {
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
@@ -261,7 +255,7 @@ test("two players, two turns", async () => {
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems400 = screen.getAllByText("400");
@@ -294,7 +288,7 @@ test("three players", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems = screen.getAllByText("300");
@@ -319,7 +313,7 @@ test("three players, four turns", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");

@@ -42,22 +42,16 @@ beforeEach(() => {
 });
 
 
-const addTwoPlayers = () => {
+const addPlayers = (playerNames) => {
+    if (playerNames.length > 2) {
+        for (let i = 0; i < playerNames.length - 2; i++) {
+            fireEvent.click(screen.getByText(/Add Player/i));
+        }
+    }
     const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    fireEvent.change(playerInputs[0], { target: { value: "Alice" } });
-    fireEvent.change(playerInputs[1], { target: { value: "Bob" } });
-
-    fireEvent.click(screen.getByText(/Start Game/i));
-}
-
-const addThreePlayers = () => {
-    fireEvent.click(screen.getByText(/Add Player/i));
-
-    const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    fireEvent.change(playerInputs[0], { target: { value: "Alice" } });
-    fireEvent.change(playerInputs[1], { target: { value: "Bob" } });
-    fireEvent.change(playerInputs[2], { target: { value: "Carlos" } });
-
+    for (let i = 0; i < playerNames.length; i++) {
+        fireEvent.change(playerInputs[i], { target: { value: playerNames[i] } });
+    }
     fireEvent.click(screen.getByText(/Start Game/i));
 }
 
@@ -83,7 +77,7 @@ test("Lifeline 50:50 works correctly", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");
@@ -128,7 +122,7 @@ test("Lifeline 50:50 is per-player", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");
@@ -191,7 +185,7 @@ test("Lifeline still used on next turn", async () => {
         render(<App />);
     });
 
-    addTwoPlayers();
+    addPlayers(["Alice", "Bob"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");
@@ -250,7 +244,7 @@ test("Lifeline 50:50 persists after page refresh", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");
@@ -301,7 +295,7 @@ test("Lifeline 50:50 persists after page refresh", async () => {
         render(<App />);
     });
 
-    addThreePlayers();
+    addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems300 = screen.getAllByText("300");
