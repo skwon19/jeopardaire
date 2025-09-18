@@ -6,7 +6,8 @@ const LifeLinesComponent = ({
     invalidateAnswers,
     lifelinesUsed,
     setLifelinesUsed,
-    currentPlayer
+    currentPlayer,
+    penalties
 }) => {
     const removeTwoWrongAnswers = () => { // Invalidate two wrong answers
         const wrongAnswers = [];
@@ -23,6 +24,21 @@ const LifeLinesComponent = ({
             const keep = Math.floor(Math.random() * wrongAnswers.length);
             wrongAnswers.splice(keep, 1);
             invalidateAnswers(wrongAnswers);
+        }
+    }
+
+    const removeOneWrongAnswer = () => { // Invalidate one wrong answers
+        const wrongAnswers = [];
+        for (let i = 0; i < 4; i++) {
+            if (i !== correctAnswer && validAnswer[i]) {
+                wrongAnswers.push(i);
+            }
+        }
+
+        if (wrongAnswers.length !== 0) {
+            // Randomly pick one to remove
+            const remove = Math.floor(Math.random() * wrongAnswers.length);
+            invalidateAnswers([wrongAnswers[remove]]);
         }
     }
 
@@ -52,6 +68,12 @@ const LifeLinesComponent = ({
                 }}
             >
                 Phone a Friend (offline)
+            </div>
+            <div
+                className="lifeline"
+                onClick={removeOneWrongAnswer}
+            >
+                {penalties[currentPlayer]}
             </div>
         </div>
     )

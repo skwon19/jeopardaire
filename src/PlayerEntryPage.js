@@ -1,20 +1,28 @@
 import { useState } from "react";
 
 const PlayerEntryPage = ({ initializePlayers }) => {
-    const [players, setPlayers] = useState(["", ""]); // Start with 2 players
+    const [players, setPlayers] = useState([ // Start with 2 players
+        { name: "", penalty: "" },
+        { name: "", penalty: "" }
+    ]);
     const [error, setError] = useState("");
 
-    const handleChange = (idx, value) => {
+    const handleChange = (idx, field, value) => {
         const updated = [...players];
-        updated[idx] = value;
+        updated[idx][field] = value;
         setPlayers(updated);
     };
 
-    const addPlayer = () => setPlayers([...players, ""]);
+    const addPlayer = () => setPlayers([...players, { name: "", penalty: "" }]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const filtered = players.map(p => p.trim()).filter(Boolean);
+        const filtered = players
+            .map(p => ({
+                name: p.name.trim(),
+                penalty: p.penalty.trim()
+            }))
+            .filter(Boolean);
         if (filtered.length < 1) {
             setError("Please enter at least one player name.");
             return;
@@ -25,16 +33,24 @@ const PlayerEntryPage = ({ initializePlayers }) => {
 
     return (
         <div className="player-entry-page">
-            <h2>Enter Player Names</h2>
+            <h2>Enter Player Names and Penalties</h2>
             <form onSubmit={handleSubmit}>
                 {players.map((name, idx) => (
-                    <div key={idx}>
+                    <div key={idx} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                         <input
                             type="text"
-                            value={name}
-                            onChange={e => handleChange(idx, e.target.value)}
+                            value={players.name}
+                            onChange={e => handleChange(idx, "name", e.target.value)}
                             placeholder={`Player ${idx + 1}`}
                             required
+                        />
+                        <input
+                            type="text"
+                            value={players.penalty}
+                            onChange={e => handleChange(idx, "penalty", e.target.value)}
+                            placeholder="Penalty (e.g. do 10 push-ups, tell a secret about yourself)"
+                            required
+                            style={{ width: "350px" }}
                         />
                     </div>
                 ))}

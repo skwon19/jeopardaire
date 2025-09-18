@@ -50,6 +50,10 @@ function App() {
         const saved = localStorage.getItem("lifelinesUsed");
         return saved ? JSON.parse(saved) : [];
     });
+    const [penalties, setPenalties] = useState(() => {
+        const saved = localStorage.getItem("penalties");
+        return saved ? JSON.parse(saved) : [];
+    });
 
     useEffect(() => {
         const fetchData = async() => {
@@ -119,17 +123,8 @@ function App() {
     }, [lifelinesUsed]);
 
     useEffect(() => {
-        if (lifelinesUsed.length === 0) { // Set lifelines for each player
-            const defaultLifelines = [];
-            players.forEach(() => {
-                defaultLifelines.push({
-                    "50:50": false,
-                    "phone": false
-                });
-            });
-            setLifelinesUsed(defaultLifelines);
-        }
-    }, [players]);
+        localStorage.setItem("penalties", JSON.stringify(penalties));
+    }, [penalties]);
 
     // Decide which view to show based on state
     useEffect(() => {
@@ -164,10 +159,27 @@ function App() {
         setView("grid");
     };
 
-    const initializePlayers = (players) => {
-        setPlayers(players);
-        setScores(Array(players.length).fill(0));
+    const initializePlayers = (playerObjs) => {
+        const playerNames = []
+        const playerPenalties = []
+        playerObjs.forEach(p => {
+            playerNames.push(p.name);
+            playerPenalties.push(p.penalty);
+        });
+
+        setPlayers(playerNames);
+        setPenalties(playerPenalties);
+        setScores(Array(playerObjs.length).fill(0));
         setCurrentPlayer(0);
+
+        const defaultLifelines = [];
+        playerObjs.forEach(() => {
+            defaultLifelines.push({
+                "50:50": false,
+                "phone": false
+            });
+        });
+        setLifelinesUsed(defaultLifelines);
     }
 
     return (
@@ -204,6 +216,7 @@ function App() {
             setFeedbacks={setFeedbacks}
             lifelinesUsed={lifelinesUsed}
             setLifelinesUsed={setLifelinesUsed}
+            penalties={penalties}
             />
         )}
         </div>

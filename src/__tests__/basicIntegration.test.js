@@ -41,7 +41,11 @@ beforeEach(() => {
     localStorage.clear();
 });
 
-const addPlayers = (playerNames) => {
+export const addPlayers = (playerNames, playerPenalties) => {
+    if (!playerPenalties) {
+        playerPenalties = playerNames.map(name => `Do penalty`);
+    }
+
     if (playerNames.length > 2) {
         for (let i = 0; i < playerNames.length - 2; i++) {
             fireEvent.click(screen.getByText(/Add Player/i));
@@ -51,10 +55,14 @@ const addPlayers = (playerNames) => {
     for (let i = 0; i < playerNames.length; i++) {
         fireEvent.change(playerInputs[i], { target: { value: playerNames[i] } });
     }
+    const penaltyInputs = screen.getAllByPlaceholderText(/Penalty/);
+    for (let i = 0; i < playerNames.length; i++) {
+        fireEvent.change(penaltyInputs[i], { target: { value: playerPenalties[i]} });
+    }
     fireEvent.click(screen.getByText(/Start Game/i));
 }
 
-const refreshPage = async () => {
+export const refreshPage = async () => {
     // Unmount the app (simulating a page reload) and then remount it
     const { unmount } = render(<App />);
     unmount();
@@ -64,7 +72,7 @@ const refreshPage = async () => {
     });
 }
 
-const expectPlayerScore = (playerName, expectedScore) => {
+export const expectPlayerScore = (playerName, expectedScore) => {
     expect(screen.getByText(playerName)).toBeInTheDocument();
     const player = screen.getByText(playerName);
     const playerScore = player.nextElementSibling.textContent.trim();

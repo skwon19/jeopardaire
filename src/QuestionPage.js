@@ -17,7 +17,8 @@ const QuestionPage = ({
     feedbacks,
     setFeedbacks,
     lifelinesUsed,
-    setLifelinesUsed
+    setLifelinesUsed,
+    penalties
 }) => {
 
     const [validAnswer, setValidAnswer] = useState(() => {
@@ -140,6 +141,7 @@ const QuestionPage = ({
                 lifelinesUsed={lifelinesUsed}
                 setLifelinesUsed={setLifelinesUsed}
                 currentPlayer={currentPlayer}
+                penalties={penalties}
             />
             <Scoreboard players={players} scores={scores} currentPlayer={currentPlayer} />
         </div>

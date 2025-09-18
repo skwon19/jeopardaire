@@ -1,6 +1,7 @@
 import { act} from "react";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react"; 
 import App from "../App";
+import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
 
 // Mock fetch for questions.json
 beforeEach(() => {
@@ -41,38 +42,7 @@ beforeEach(() => {
     localStorage.clear();
 });
 
-
-const addPlayers = (playerNames) => {
-    if (playerNames.length > 2) {
-        for (let i = 0; i < playerNames.length - 2; i++) {
-            fireEvent.click(screen.getByText(/Add Player/i));
-        }
-    }
-    const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    for (let i = 0; i < playerNames.length; i++) {
-        fireEvent.change(playerInputs[i], { target: { value: playerNames[i] } });
-    }
-    fireEvent.click(screen.getByText(/Start Game/i));
-}
-
-const refreshPage = async () => {
-    // Unmount the app (simulating a page reload) and then remount it
-    const { unmount } = render(<App />);
-    unmount();
-    cleanup();
-    await act(() => {
-        render(<App />);
-    });
-}
-
-const expectPlayerScore = (playerName, expectedScore) => {
-    expect(screen.getByText(playerName)).toBeInTheDocument();
-    const player = screen.getByText(playerName);
-    const playerScore = player.nextElementSibling.textContent.trim();
-    expect(playerScore).toBe(expectedScore);
-}
-
-test("Lifeline 50:50 works correctly", async () => {
+test("50:50 works correctly", async () => {
     await act(() => {
         render(<App />);
     });
@@ -117,7 +87,7 @@ test("Lifeline 50:50 works correctly", async () => {
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
-test("Lifeline 50:50 is per-player", async () => {
+test("50:50 is per-player", async () => {
     await act(() => {
         render(<App />);
     });
@@ -180,7 +150,7 @@ test("Lifeline 50:50 is per-player", async () => {
     expectPlayerScore("Carlos", "0");
 });
 
-test("Lifeline still used on next turn", async () => {
+test("Lifeline 50:50 still used on next turn", async () => {
     await act(() => {
         render(<App />);
     });
@@ -290,7 +260,7 @@ test("Lifeline 50:50 persists after page refresh", async () => {
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
-test("Lifeline 50:50 persists after page refresh", async () => {
+test("Refreshing page after answering question doesn't undo used 50:50", async () => {
     await act(() => {
         render(<App />);
     });
@@ -326,7 +296,7 @@ test("Lifeline 50:50 persists after page refresh", async () => {
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
-test("Lifeline phone-a-friend works correctly", async () => {
+test("Phone-a-friend (offline) works correctly", async () => {
     await act(() => {
         render(<App />);
     });
@@ -354,4 +324,245 @@ test("Lifeline phone-a-friend works correctly", async () => {
     expectPlayerScore("Carlos", "0");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
+});
+
+test("Penalties are personal to each player", async () => {
+    await act(() => {
+        render(<App />);
+    });
+    addPlayers(["Alice", "Bob", "Carlos"], ["Penalty A", "Penalty B", "Penalty C"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems100 = screen.getAllByText("100");
+    fireEvent.click(gridItems100[0]);
+    await screen.findByText("Q1");
+    expect(screen.getByText("Penalty A")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("A1"));
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    const gridItems200 = screen.getAllByText("200");
+    fireEvent.click(gridItems200[0]);
+    await screen.findByText("Q2");
+    expect(screen.getByText("Penalty B")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("A2"));
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+    await screen.findByText("Q3");
+    expect(screen.getByText("Penalty C")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("A3"));
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});
+
+test("Penalty lifeline works correctly", async () => {
+    await act(() => {
+        render(<App />);
+    });
+    addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems100 = screen.getAllByText("100");
+    fireEvent.click(gridItems100[0]);
+
+    await screen.findByText("Q1");
+    const lifelineButton = screen.getByText("Penalty A");
+    fireEvent.click(lifelineButton);
+
+    const optionA = screen.getByText("A1");
+    const optionB = screen.getByText("B1");
+    const optionC = screen.getByText("C1");
+    const optionD = screen.getByText("D1");
+    await waitFor(() => {
+        // Correct answer is B, so one of the other should be invalidated
+        expect(optionB).toHaveClass("option");
+        expect(optionB).not.toHaveClass("option-invalid");
+
+        const options = [optionA, optionC, optionD];
+        const invalidated = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated.length).toBe(1);
+        const validOptions = options.filter(opt => !opt.classList.contains("option-invalid"));
+        expect(validOptions.length).toBe(2);
+    });
+    expect(lifelineButton).not.toHaveClass("used"); // Penalty can be used multiple times
+
+    // Answer the question
+    const validOptions = [optionA, optionC, optionD].filter(opt => !opt.classList.contains("option-invalid"));
+    fireEvent.click(validOptions[0]);
+    await screen.findByText(/incorrect/i);
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    expectPlayerScore("Alice", "-100");
+    expectPlayerScore("Bob", "0");
+});
+
+test("Penalty lifeline works multiple times per turn", async() => {
+    await act(() => {
+        render(<App />);
+    });
+    addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems100 = screen.getAllByText("100");
+    fireEvent.click(gridItems100[0]);
+    await screen.findByText("Q1"); // Correct answer is B1
+
+    // First penalty use
+    const lifelineButton = screen.getByText("Penalty A");
+    fireEvent.click(lifelineButton);
+
+    const optionA = screen.getByText("A1");
+    const optionB = screen.getByText("B1");
+    const optionC = screen.getByText("C1");
+    const optionD = screen.getByText("D1");
+    const options = [optionA, optionB, optionC, optionD];
+    await waitFor(() => {
+        // One option should be invalidated
+        const invalidated = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated.length).toBe(1);
+        const validOptions = options.filter(opt => !opt.classList.contains("option-invalid"));
+        expect(validOptions.length).toBe(3);
+        expect(invalidated).not.toContain(optionB);
+    });
+    expect(lifelineButton).not.toHaveClass("used");
+    const invalidOptions1 = options.filter(opt => opt.classList.contains("option-invalid"));
+
+    // Second penalty use
+    fireEvent.click(lifelineButton);
+    await waitFor(() => {
+        // Two options should be invalidated
+        const invalidated = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated.length).toBe(2);
+        const validOptions = options.filter(opt => !opt.classList.contains("option-invalid"));
+        expect(validOptions.length).toBe(2);
+        expect(invalidated).not.toContain(optionB);
+    });
+    expect(lifelineButton).not.toHaveClass("used");
+    const invalidOptions2 = options.filter(opt => opt.classList.contains("option-invalid"));
+    for (const invalidOpt of invalidOptions1) {
+        expect(invalidOptions2).toContain(invalidOpt); // Previously invalidated should stay invalidated
+    }
+
+    // Third penalty use
+    fireEvent.click(lifelineButton);
+    await waitFor(() => {
+        // Three options should be invalidated
+        const invalidated = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated.length).toBe(3);
+        const validOptions = options.filter(opt => !opt.classList.contains("option-invalid"));
+        expect(validOptions.length).toBe(1);
+        expect(validOptions).toContain(optionB);
+    });
+    expect(lifelineButton).not.toHaveClass("used");
+    fireEvent.click(optionB); // Answer correctly
+    await screen.findByText(/correct/i);
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    expectPlayerScore("Alice", "100");
+    expectPlayerScore("Bob", "0");
+});
+
+test("Use penalty then 50:50", async() => {
+    await act(() => {
+        render(<App />);
+    });
+    addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems100 = screen.getAllByText("100");
+    fireEvent.click(gridItems100[0]);
+    await screen.findByText("Q1"); // Correct answer is B1
+
+    // Use penalty
+    const penaltyButton = screen.getByText("Penalty A");
+    fireEvent.click(penaltyButton);
+
+    const optionA = screen.getByText("A1");
+    const optionB = screen.getByText("B1");
+    const optionC = screen.getByText("C1");
+    const optionD = screen.getByText("D1");
+    const options = [optionA, optionB, optionC, optionD];
+    
+    // One option should be invalidated
+    await waitFor(() => {
+        const invalidated1 = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated1.length).toBe(1);
+    });
+    const validOptions1 = options.filter(opt => !opt.classList.contains("option-invalid"));
+    expect(validOptions1.length).toBe(3);
+    expect(validOptions1).toContain(optionB);
+    
+    // Use 50:50
+    const fiftyButton = screen.getByText("50:50");
+    fireEvent.click(fiftyButton);
+
+    await waitFor(() => {
+        expect(fiftyButton).toHaveClass("used");
+    });
+
+    const validOptions2 = options.filter(opt => !opt.classList.contains("option-invalid"));
+    const invalidated2 = options.filter(opt => opt.classList.contains("option-invalid"));
+    expect(invalidated2.length).toBe(3);
+    expect(validOptions2.length).toBe(1);
+    expect(validOptions2).toContain(optionB);
+
+    fireEvent.click(optionB); // Answer correctly
+    await screen.findByText(/correct/i);
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    expectPlayerScore("Alice", "100");
+    expectPlayerScore("Bob", "0");
+});
+
+test("Use 50:50 then penalty", async() => {
+    await act(() => {
+        render(<App />);
+    });
+    addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const gridItems100 = screen.getAllByText("100");
+    fireEvent.click(gridItems100[0]);
+    await screen.findByText("Q1"); // Correct answer is B1
+
+    // Use 50:50
+    const fiftyButton = screen.getByText("50:50");
+    fireEvent.click(fiftyButton);
+    
+    const optionA = screen.getByText("A1");
+    const optionB = screen.getByText("B1");
+    const optionC = screen.getByText("C1");
+    const optionD = screen.getByText("D1");
+    const options = [optionA, optionB, optionC, optionD];
+
+    await waitFor(() => {
+        expect(fiftyButton).toHaveClass("used");
+    });
+    
+    const invalidated1 = options.filter(opt => opt.classList.contains("option-invalid"));
+    expect(invalidated1.length).toBe(2);
+    const validOptions1 = options.filter(opt => !opt.classList.contains("option-invalid"));
+    expect(validOptions1.length).toBe(2);
+    expect(validOptions1).toContain(optionB);
+    
+    // Use penalty
+    const penaltyButton = screen.getByText("Penalty A");
+    fireEvent.click(penaltyButton);
+
+    // Three options should be invalidated
+    await waitFor(() => {
+        const invalidated1 = options.filter(opt => opt.classList.contains("option-invalid"));
+        expect(invalidated1.length).toBe(3);
+    });
+
+    const validOptions2 = options.filter(opt => !opt.classList.contains("option-invalid"));
+    expect(validOptions2.length).toBe(1);
+    expect(validOptions2).toContain(optionB);
+
+    fireEvent.click(optionB); // Answer correctly
+    await screen.findByText(/correct/i);
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    expectPlayerScore("Alice", "100");
+    expectPlayerScore("Bob", "0");
 });
