@@ -12,27 +12,27 @@ beforeEach(() => {
                     {
                         "question": "Q1",
                         "options": ["A1", "B1", "C1", "D1"],
-                        "answer": "B1"
+                        "answer": "B"
                     },
                     {
                         "question": "Q2",
                         "options": ["A2", "B2", "C2", "D2"],
-                        "answer": "A2"
+                        "answer": "A"
                     },
                     {
                         "question": "Q3",
                         "options": ["A3", "B3", "C3", "D3"],
-                        "answer": "D3"
+                        "answer": "D"
                     },
                     {
                         "question": "Q4",
                         "options": ["A4", "B4", "C4", "D4"],
-                        "answer": "A4"
+                        "answer": "A"
                     },
                     {
                         "question": "Q5",
                         "options": ["A5", "B5", "C5", "D5"],
-                        "answer": "C5"
+                        "answer": "C"
                     }
                 ]
             },
@@ -90,6 +90,10 @@ test("add players, answer question correctly, update score, and grid updates", a
         render(<App />);
     });
 
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+
     // Add two players
     addPlayers(["Alice", "Bob"]);
 
@@ -130,6 +134,10 @@ test("answer question incorrectly, update score", async () => {
         render(<App />);
     });
 
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+
     addPlayers(["Alice", "Bob"]);
 
     // Wait for grid to appear
@@ -167,7 +175,9 @@ test("answer question, back to grid, game state persists after reload", async ()
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"]);
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -206,7 +216,9 @@ test("refresh while on question page before answering question", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"]);
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems = screen.getAllByText("400");
@@ -224,7 +236,9 @@ test("refresh while on question page after answering question", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"]);
     await screen.findByText((content) => content.includes("2000s Pop"));
     const gridItems = screen.getAllByText("400");
@@ -262,7 +276,9 @@ test("two players, two turns", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -295,7 +311,9 @@ test("three players", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -320,7 +338,9 @@ test("three players, four turns", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));

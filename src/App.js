@@ -2,13 +2,21 @@ import './App.css';
 import GridPage from './GridPage';
 import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
+import QuestionsUploadPage from './QuestionsUploadPage';
 import { useEffect, useState } from "react";
 
 function App() {
     const numPointVals = 5; // points: 100 to 500
 
-    const [headers, setHeaders] = useState([]);
-    const [questions, setQuestions] = useState([]);
+    const [headers, setHeaders] = useState(() => {
+        const saved = localStorage.getItem("headers");
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const [questions, setQuestions] = useState(() => {
+        const saved = localStorage.getItem("questions");
+        return saved ? JSON.parse(saved) : [];
+    });
 
     const [players, setPlayers] = useState(() => {
         const saved = localStorage.getItem("players");
@@ -29,7 +37,7 @@ function App() {
 
     const [view, setView] = useState(() => {
         const saved = localStorage.getItem("view");
-        return saved ? JSON.parse(saved) : "entry"; // "entry", "grid", "question"
+        return saved ? JSON.parse(saved) : "questionEntry"; // "questionEntry", "playerEntry", "grid", "question"
     });
 
     const [questionCoords, setQuestionCoords] = useState(() => {
@@ -55,17 +63,6 @@ function App() {
         return saved ? JSON.parse(saved) : [];
     });
 
-    useEffect(() => {
-        const fetchData = async() => {
-            const response = await fetch("/questions.json");
-            const data = await response.json();
-            setQuestions(data);
-            const categoryNames = data.map(item => item.category);
-            setHeaders(categoryNames);
-        };
-        fetchData();
-    }, []);
-
     useEffect(() => { // After questions load, populate seenQuestions, selectAnswer, feedbacks if empty
         if (headers.length > 0) {
             if (seenQuestions.length === 0) {
@@ -84,6 +81,14 @@ function App() {
                 setFeedbacks(defaultFeedbacks);
             }
         }
+    }, [headers]);
+
+    useEffect(() => {
+        localStorage.setItem("questions", JSON.stringify(questions));
+    }, [questions]);
+
+    useEffect(() => {
+        localStorage.setItem("headers", JSON.stringify(headers));
     }, [headers]);
 
     useEffect(() => {
@@ -128,14 +133,30 @@ function App() {
 
     // Decide which view to show based on state
     useEffect(() => {
-        if (players.length === 0) {
-            setView("entry");
+        if (questions.length === 0) {
+            setView("questionEntry");
+        } else if (players.length === 0) {
+            setView("playerEntry");
         } else if (questionCoords.row !== null && questionCoords.col !== null) {
             setView("question");
         } else {
             setView("grid");
         }
-    }, [players, questionCoords]);
+    }, [players, questionCoords, questions]);
+
+    const loadDefaultQuestions = async () => {
+        const response = await fetch("/questions.json");
+        const data = await response.json();
+        setQuestions(data);
+        const categoryNames = data.map(item => item.category);
+        setHeaders(categoryNames);
+    }
+
+    const loadQuestions = (customQuestions) => { // customQuestions is parsed JSON object
+        setQuestions(customQuestions);
+        const categoryNames = customQuestions.map(item => item.category);
+        setHeaders(categoryNames);
+    }
 
     // Handlers to switch views
     const handleQuestionSelect = (row, col) => {
@@ -185,7 +206,13 @@ function App() {
     return (
         <div>
         <h1>Jeopardaire</h1>
-        {view === "entry" && (
+        {view === "questionEntry" && (
+            <QuestionsUploadPage 
+                onQuestionsLoaded={loadQuestions} 
+                useDefaultQuestions={loadDefaultQuestions}
+            />
+        )}
+        {view === "playerEntry" && (
             <PlayerEntryPage initializePlayers={initializePlayers} />
         )}
         {view === "grid" && (

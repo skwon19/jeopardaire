@@ -13,27 +13,27 @@ beforeEach(() => {
                     {
                         "question": "Q1",
                         "options": ["A1", "B1", "C1", "D1"],
-                        "answer": "B1"
+                        "answer": "B"
                     },
                     {
                         "question": "Q2",
                         "options": ["A2", "B2", "C2", "D2"],
-                        "answer": "A2"
+                        "answer": "A"
                     },
                     {
                         "question": "Q3",
                         "options": ["A3", "B3", "C3", "D3"],
-                        "answer": "D3"
+                        "answer": "D"
                     },
                     {
                         "question": "Q4",
                         "options": ["A4", "B4", "C4", "D4"],
-                        "answer": "A4"
+                        "answer": "A"
                     },
                     {
                         "question": "Q5",
                         "options": ["A5", "B5", "C5", "D5"],
-                        "answer": "C5"
+                        "answer": "C"
                     }
                 ]
             },
@@ -46,7 +46,9 @@ test("50:50 works correctly", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -91,7 +93,9 @@ test("50:50 is per-player", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -154,7 +158,9 @@ test("Lifeline 50:50 still used on next turn", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -213,7 +219,9 @@ test("Lifeline 50:50 persists after page refresh", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -264,7 +272,9 @@ test("Refreshing page after answering question doesn't undo used 50:50", async (
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -300,7 +310,9 @@ test("Phone-a-friend (offline) works correctly", async () => {
     await act(() => {
         render(<App />);
     });
-
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -330,6 +342,9 @@ test("Penalties are personal to each player", async () => {
     await act(() => {
         render(<App />);
     });
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob", "Carlos"], ["Penalty A", "Penalty B", "Penalty C"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -358,6 +373,9 @@ test("Penalties are personal to each player", async () => {
 test("Penalty lifeline works correctly", async () => {
     await act(() => {
         render(<App />);
+    });
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
@@ -399,6 +417,9 @@ test("Penalty lifeline works correctly", async () => {
 test("Penalty lifeline works multiple times per turn", async() => {
     await act(() => {
         render(<App />);
+    });
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
@@ -466,6 +487,9 @@ test("Use penalty then 50:50", async() => {
     await act(() => {
         render(<App />);
     });
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
@@ -517,6 +541,9 @@ test("Use penalty then 50:50", async() => {
 test("Use 50:50 then penalty", async() => {
     await act(() => {
         render(<App />);
+    });
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
