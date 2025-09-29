@@ -1,0 +1,39 @@
+.leaderboard {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 24px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1.2em;
+}
+
+.leaderboard-row--winner {
+    background: #ffe066;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #ffae00;
+}
+
+.leaderboard-name {
+    flex: 1;
+}
+
+.leaderboard-score {
+    margin-left: 1.5rem;
+    font-family: monospace;
+}
+
+.leaderboard-winner {
+    margin-left: 1rem;
+    color: #ffae00;
+    font-weight: bold;
+    font-size: 1em;
+}

@@ -1,5 +1,6 @@
 import './App.css';
 import GridPage from './GridPage';
+import Leaderboard from './Leaderboard';
 import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
 import QuestionsUploadPage from './QuestionsUploadPage';
@@ -37,7 +38,7 @@ function App() {
 
     const [view, setView] = useState(() => {
         const saved = localStorage.getItem("view");
-        return saved ? JSON.parse(saved) : "questionEntry"; // "questionEntry", "playerEntry", "grid", "question"
+        return saved ? JSON.parse(saved) : "questionEntry"; // "questionEntry", "playerEntry", "grid", "question," "leaderboard"
     });
 
     const [questionCoords, setQuestionCoords] = useState(() => {
@@ -139,10 +140,27 @@ function App() {
             setView("playerEntry");
         } else if (questionCoords.row !== null && questionCoords.col !== null) {
             setView("question");
+        } else if (allQuestionsSeen()) {
+            setView("leaderboard");
         } else {
             setView("grid");
         }
     }, [players, questionCoords, questions]);
+
+    /**
+     * Return true if all questions have been seen (game over),
+     * false otherwise
+     */
+    const allQuestionsSeen = () => {
+        for (let i=0; i < seenQuestions.length; i++) {
+            for (let j=0; j<seenQuestions[i].length; j++) {
+                if (seenQuestions[i][j] === false) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     const loadDefaultQuestions = async () => {
         const response = await fetch("/questions.json");
@@ -217,33 +235,39 @@ function App() {
         )}
         {view === "grid" && (
             <GridPage
-            rows={numPointVals + 1}
-            columns={headers.length}
-            headers={headers}
-            players={players}
-            scores={scores}
-            currentPlayer={currentPlayer}
-            onQuestionSelect={handleQuestionSelect}
-            seenQuestions={seenQuestions}
+                rows={numPointVals + 1}
+                columns={headers.length}
+                headers={headers}
+                players={players}
+                scores={scores}
+                currentPlayer={currentPlayer}
+                onQuestionSelect={handleQuestionSelect}
+                seenQuestions={seenQuestions}
             />
         )}
         {view === "question" && (
             <QuestionPage
-            questions={questions}
-            scores={scores}
-            setScores={setScores}
-            currentPlayer={currentPlayer}
-            players={players}
-            row={questionCoords.row}
-            col={questionCoords.col}
-            onClose={handleQuestionClose}
-            selectedAnswers={selectedAnswers}
-            setSelectedAnswers={setSelectedAnswers}
-            feedbacks={feedbacks}
-            setFeedbacks={setFeedbacks}
-            lifelinesUsed={lifelinesUsed}
-            setLifelinesUsed={setLifelinesUsed}
-            penalties={penalties}
+                questions={questions}
+                scores={scores}
+                setScores={setScores}
+                currentPlayer={currentPlayer}
+                players={players}
+                row={questionCoords.row}
+                col={questionCoords.col}
+                onClose={handleQuestionClose}
+                selectedAnswers={selectedAnswers}
+                setSelectedAnswers={setSelectedAnswers}
+                feedbacks={feedbacks}
+                setFeedbacks={setFeedbacks}
+                lifelinesUsed={lifelinesUsed}
+                setLifelinesUsed={setLifelinesUsed}
+                penalties={penalties}
+            />
+        )}
+        {view === "leaderboard" && (
+            <Leaderboard
+                players={players}
+                scores={scores}
             />
         )}
         </div>
