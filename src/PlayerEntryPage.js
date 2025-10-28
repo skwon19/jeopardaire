@@ -7,6 +7,21 @@ const PlayerEntryPage = ({ initializePlayers }) => {
     ]);
     const [error, setError] = useState("");
 
+    function shuffle(array) {
+        let currentIndex = array.length;
+
+        // While there remain elements to shuffle...
+        while (currentIndex > 0) {
+
+            // Pick a remaining element...
+            let randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+    }
+
     const handleChange = (idx, field, value) => {
         const updated = [...players];
         updated[idx][field] = value;
@@ -23,11 +38,21 @@ const PlayerEntryPage = ({ initializePlayers }) => {
                 penalty: p.penalty.trim()
             }))
             .filter(Boolean);
+
+        // Check for distinct names
+        const names = filtered.map(p => p.name);
+        const uniqueNames = new Set(names);
+        if (uniqueNames.size !== names.length) {
+            setError("Player names must be distinct.");
+            return;
+        }
+
         if (filtered.length < 1) {
             setError("Please enter at least one player name.");
             return;
         }
         setError("");
+        shuffle(filtered);
         initializePlayers(filtered);
     };
 

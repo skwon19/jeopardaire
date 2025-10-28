@@ -1,7 +1,7 @@
 import { act} from "react";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react"; 
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
+import { addPlayers, refreshPage, expectPlayerScore, getPlayerOrder } from "./basicIntegration.test.js";
 
 // Mock fetch for questions.json
 beforeEach(() => {
@@ -43,15 +43,16 @@ beforeEach(() => {
 });
 
 test("50:50 works correctly", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -82,23 +83,23 @@ test("50:50 works correctly", async () => {
     fireEvent.click(optionD);
 
     await screen.findByText("CORRECT");
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "0");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "0");
+    expectPlayerScore(playersInOrder[2], "0");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
 test("50:50 is per-player", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -115,14 +116,14 @@ test("50:50 is per-player", async () => {
     await screen.findByText("CORRECT");
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     const gridItems500 = screen.getAllByText("500");
     fireEvent.click(gridItems500[0]);
 
     await screen.findByText("Q5");
     const lifelineButton2 = screen.getByText("50:50");
 
-    expect(lifelineButton2).not.toHaveClass("used"); // Not used yet for Bob
+    expect(lifelineButton2).not.toHaveClass("used"); // Not used yet for Player 2
     
     fireEvent.click(lifelineButton2);
 
@@ -149,21 +150,21 @@ test("50:50 is per-player", async () => {
     fireEvent.click(validOptions[0]);
 
     await screen.findByText("INCORRECT");
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "-500");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "-500");
+    expectPlayerScore(playersInOrder[2], "0");
 });
 
 test("Lifeline 50:50 still used on next turn", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -180,14 +181,14 @@ test("Lifeline 50:50 still used on next turn", async () => {
     await screen.findByText("CORRECT");
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     const gridItems500 = screen.getAllByText("500");
     fireEvent.click(gridItems500[0]);
 
     await screen.findByText("Q5");
     const lifelineButton2 = screen.getByText("50:50");
 
-    expect(lifelineButton2).not.toHaveClass("used"); // Not used yet for Bob
+    expect(lifelineButton2).not.toHaveClass("used"); // Not used yet for Player 2
 
     const optionA = screen.getByText("A5");
     const optionB = screen.getByText("B5");
@@ -199,32 +200,32 @@ test("Lifeline 50:50 still used on next turn", async () => {
         expect(opt).not.toHaveClass("option-invalid");
     }
 
-    fireEvent.click(optionC); // Answer correctly to end Bob's turn
+    fireEvent.click(optionC); // Answer correctly to end Player 2's turn
     await screen.findByText("CORRECT");
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "500");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "500");
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     const gridItems200 = screen.getAllByText("200");
     fireEvent.click(gridItems200[0]);
 
     await screen.findByText("Q2");
     const lifelineButton3 = screen.getByText("50:50");
 
-    expect(lifelineButton3).toHaveClass("used"); // Still used for Alice
+    expect(lifelineButton3).toHaveClass("used"); // Still used for Player 1
 });
 
 test("Lifeline 50:50 persists after page refresh", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -261,23 +262,23 @@ test("Lifeline 50:50 persists after page refresh", async () => {
     fireEvent.click(validOptions[0]);
 
     await screen.findByText("INCORRECT");
-    expectPlayerScore("Alice", "-300");
-    expectPlayerScore("Bob", "0");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "-300");
+    expectPlayerScore(playersInOrder[1], "0");
+    expectPlayerScore(playersInOrder[2], "0");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
 test("Refreshing page after answering question doesn't undo used 50:50", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -299,23 +300,23 @@ test("Refreshing page after answering question doesn't undo used 50:50", async (
     expect(lifelineButtonAfterRefresh).toHaveClass("used");  
 
     await screen.findByText("CORRECT");
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "0");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "0");
+    expectPlayerScore(playersInOrder[2], "0");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
 test("Phone-a-friend (offline) works correctly", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
 
@@ -331,60 +332,70 @@ test("Phone-a-friend (offline) works correctly", async () => {
     fireEvent.click(screen.getByText("D3"));
 
     await screen.findByText("CORRECT");
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "0");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "0");
+    expectPlayerScore(playersInOrder[2], "0");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
 test("Penalties are personal to each player", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
+    const playerPenalties = new Map([
+        ["Alice", "Penalty A"],
+        ["Bob", "Penalty B"],
+        ["Carlos", "Penalty C"]
+    ]);
+
     addPlayers(["Alice", "Bob", "Carlos"], ["Penalty A", "Penalty B", "Penalty C"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
     await screen.findByText("Q1");
-    expect(screen.getByText("Penalty A")).toBeInTheDocument();
+    expect(screen.getByText(playerPenalties.get(playersInOrder[0]))).toBeInTheDocument();
     fireEvent.click(screen.getByText("A1"));
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
     const gridItems200 = screen.getAllByText("200");
     fireEvent.click(gridItems200[0]);
     await screen.findByText("Q2");
-    expect(screen.getByText("Penalty B")).toBeInTheDocument();
+    expect(screen.getByText(playerPenalties.get(playersInOrder[1]))).toBeInTheDocument();
     fireEvent.click(screen.getByText("A2"));
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
     await screen.findByText("Q3");
-    expect(screen.getByText("Penalty C")).toBeInTheDocument();
+    expect(screen.getByText(playerPenalties.get(playersInOrder[2]))).toBeInTheDocument();
     fireEvent.click(screen.getByText("A3"));
     fireEvent.click(screen.getByText(/Back to Grid/i));
 });
 
 test("Penalty lifeline works correctly", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
+    const playerPenalties = new Map([
+        ["Alice", "Penalty A"],
+        ["Bob", "Penalty B"]
+    ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
 
     await screen.findByText("Q1");
-    const lifelineButton = screen.getByText("Penalty A");
+    const lifelineButton = screen.getByText(playerPenalties.get(playersInOrder[0]));
     fireEvent.click(lifelineButton);
 
     const optionA = screen.getByText("A1");
@@ -410,26 +421,30 @@ test("Penalty lifeline works correctly", async () => {
     await screen.findByText(/incorrect/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expectPlayerScore("Alice", "-100");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "-100");
+    expectPlayerScore(playersInOrder[1], "0");
 });
 
 test("Penalty lifeline works multiple times per turn", async() => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
+    const playerPenalties = new Map([
+        ["Alice", "Penalty A"],
+        ["Bob", "Penalty B"]
+    ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
     await screen.findByText("Q1"); // Correct answer is B1
 
     // First penalty use
-    const lifelineButton = screen.getByText("Penalty A");
+    const lifelineButton = screen.getByText(playerPenalties.get(playersInOrder[0]));
     fireEvent.click(lifelineButton);
 
     const optionA = screen.getByText("A1");
@@ -479,26 +494,30 @@ test("Penalty lifeline works multiple times per turn", async() => {
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expectPlayerScore("Alice", "100");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "100");
+    expectPlayerScore(playersInOrder[1], "0");
 });
 
 test("Use penalty then 50:50", async() => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
+    const playerPenalties = new Map([
+        ["Alice", "Penalty A"],
+        ["Bob", "Penalty B"]
+    ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
     await screen.findByText("Q1"); // Correct answer is B1
 
     // Use penalty
-    const penaltyButton = screen.getByText("Penalty A");
+    const penaltyButton = screen.getByText(playerPenalties.get(playersInOrder[0]));
     fireEvent.click(penaltyButton);
 
     const optionA = screen.getByText("A1");
@@ -534,20 +553,24 @@ test("Use penalty then 50:50", async() => {
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expectPlayerScore("Alice", "100");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "100");
+    expectPlayerScore(playersInOrder[1], "0");
 });
 
 test("Use 50:50 then penalty", async() => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
+    const playerPenalties = new Map([
+        ["Alice", "Penalty A"],
+        ["Bob", "Penalty B"]
+    ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
     await screen.findByText("Q1"); // Correct answer is B1
@@ -573,7 +596,7 @@ test("Use 50:50 then penalty", async() => {
     expect(validOptions1).toContain(optionB);
     
     // Use penalty
-    const penaltyButton = screen.getByText("Penalty A");
+    const penaltyButton = screen.getByText(playerPenalties.get(playersInOrder[0]));
     fireEvent.click(penaltyButton);
 
     // Three options should be invalidated
@@ -590,6 +613,6 @@ test("Use 50:50 then penalty", async() => {
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expectPlayerScore("Alice", "100");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "100");
+    expectPlayerScore(playersInOrder[1], "0");
 });

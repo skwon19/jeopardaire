@@ -79,6 +79,16 @@ export const expectPlayerScore = (playerName, expectedScore) => {
     expect(playerScore).toBe(expectedScore);
 }
 
+export const getPlayerOrder = (container) => {
+    const playerElts = container.getElementsByClassName("scoreboard-cell");
+    const playerOrder = [];
+    for (let elt of playerElts) {
+        const name = elt.querySelector(".scoreboard-name").textContent.trim();
+        playerOrder.push(name);
+    }
+    return playerOrder;
+}
+
 test("fetch mock works", async () => {
     const response = await fetch("/questions.json");
     const data = await response.json();
@@ -86,19 +96,24 @@ test("fetch mock works", async () => {
 });
 
 test("add players, answer question correctly, update score, and grid updates", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
 
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
 
     // Add two players
-    addPlayers(["Alice", "Bob"]);
+    const playersToAdd = ["Alice", "Bob"];
+    addPlayers(playersToAdd);
 
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
+
+    const playersInOrder = getPlayerOrder(container);
+    expect(playersInOrder.length).toBe(playersToAdd.length);
+    for (let name of playersToAdd) {
+        expect(playersInOrder).toContain(name);
+    }
 
     // Click on 2000s Pop for 200 (row 2, col 0)
     const gridItems = screen.getAllByText("200");
@@ -116,32 +131,36 @@ test("add players, answer question correctly, update score, and grid updates", a
     // Back to grid
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    // Alice's score should be 200
-    expectPlayerScore("Alice", "200");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "200");
+    expectPlayerScore(playersInOrder[1], "0");
 
     const seen200 = Array.from(document.querySelectorAll(".grid-item.seen"))
         .find(el => el.textContent.trim() === "200"); // Question is marked seen
     expect(seen200).toBeInTheDocument();
 
-    // Bob's turn now
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    // Player 2's turn now
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
 });
 
 test("answer question incorrectly, update score", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
 
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
 
-    addPlayers(["Alice", "Bob"]);
+    const playersToAdd = ["Alice", "Bob"];
+    addPlayers(playersToAdd);
 
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
+
+    const playersInOrder = getPlayerOrder(container);
+    expect(playersInOrder.length).toBe(playersToAdd.length);
+    for (let name of playersToAdd) {
+        expect(playersInOrder).toContain(name);
+    }
 
     // Click on 2000s Pop for 300 (row 2, col 0)
     const gridItems = screen.getAllByText("300");
@@ -156,10 +175,10 @@ test("answer question incorrectly, update score", async () => {
     // Should show "incorrect" and update score
     await screen.findByText(/incorrect/i);
 
-    expectPlayerScore("Alice", "-300");
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[0], "-300");
+    expectPlayerScore(playersInOrder[1], "0");
 
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
     // Back to grid
     fireEvent.click(screen.getByText(/Back to Grid/i));
@@ -168,19 +187,25 @@ test("answer question incorrectly, update score", async () => {
         .find(el => el.textContent.trim() === "300"); // Question is marked seen
     expect(seen200).toBeInTheDocument();
 
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 });
 
 test("answer question, back to grid, game state persists after reload", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
-    addPlayers(["Alice", "Bob"]);
+
+    const playersToAdd = ["Alice", "Bob"];
+    addPlayers(playersToAdd);
     // Wait for grid to appear
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+    expect(playersInOrder.length).toBe(playersToAdd.length);
+    for (let name of playersToAdd) {
+        expect(playersInOrder).toContain(name);
+    }
     // Click on 2000s Pop for 300 (row 2, col 0)
     const gridItems = screen.getAllByText("300");
     fireEvent.click(gridItems[0]);
@@ -194,17 +219,17 @@ test("answer question, back to grid, game state persists after reload", async ()
     await refreshPage();
 
     // Check that the state is restored
-    expect(screen.getByText(/Alice/)).toBeInTheDocument();
-    expect(screen.getByText(/Bob/)).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0])).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[1])).toBeInTheDocument();
 
-    // Alice's score should still be -300
-    expectPlayerScore("Alice", "-300");
+    // Player 1's score should still be -300
+    expectPlayerScore(playersInOrder[0], "-300");
 
-    // Bob's score should still be 0
-    expectPlayerScore("Bob", "0");
+    // Player 2's score should still be 0
+    expectPlayerScore(playersInOrder[1], "0");
 
-    // Bob's turn now
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    // Player 2's turn now
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
     // The 300 question should still be marked as seen
     const seen300 = Array.from(document.querySelectorAll(".grid-item.seen"))
@@ -213,14 +238,14 @@ test("answer question, back to grid, game state persists after reload", async ()
 });
 
 test("refresh while on question page before answering question", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
     addPlayers(["Alice", "Bob"]);
     await screen.findByText((content) => content.includes("2000s Pop"));
+
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
 
@@ -233,14 +258,15 @@ test("refresh while on question page before answering question", async () => {
 });
 
 test("refresh while on question page after answering question", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
-    addPlayers(["Alice", "Bob"]);
+    const playersToAdd = ["Alice", "Bob"];
+    addPlayers(playersToAdd);
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
     expect(screen.getByText("Q4")).toBeInTheDocument();
@@ -248,13 +274,13 @@ test("refresh while on question page after answering question", async () => {
 
     // Should show "correct"
     await screen.findByText(/correct/i);
-    // Alice's score should be 400, still her turn
-    expectPlayerScore("Alice", "400");
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    // Player 1's score should be 400, still her turn
+    expectPlayerScore(playersInOrder[0], "400");
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
     expect(screen.getByText("A4").closest(".option-correct")).toBeInTheDocument();
 
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[1], "0");
 
     await refreshPage();
 
@@ -264,24 +290,26 @@ test("refresh while on question page after answering question", async () => {
     await screen.findByText(/correct/i);
     expect(screen.getByText("A4").closest(".option-correct")).toBeInTheDocument();
 
-    // Alice's score should be 400, still her turn
-    expectPlayerScore("Alice", "400");
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    // Player 1's score should be 400, still her turn
+    expectPlayerScore(playersInOrder[0], "400");
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
-    expectPlayerScore("Bob", "0");
+    expectPlayerScore(playersInOrder[1], "0");
 
 });
 
 test("two players, two turns", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
-    addPlayers(["Alice", "Bob"]);
+    const playersToAdd = ["Alice", "Bob"];
+    addPlayers(playersToAdd);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
     const gridItems400 = screen.getAllByText("400");
     fireEvent.click(gridItems400[0]);
     expect(screen.getByText("Q4")).toBeInTheDocument();
@@ -289,7 +317,7 @@ test("two players, two turns", async () => {
     await screen.findByText(/incorrect/i);
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
     expect(screen.getByText("Q1")).toBeInTheDocument();
@@ -300,60 +328,69 @@ test("two players, two turns", async () => {
     fireEvent.click(screen.getByText("B1")); // correct answer
     await screen.findByText(/correct/i);
 
-    expectPlayerScore("Alice", "-400");
-    expectPlayerScore("Bob", "100");
+    expectPlayerScore(playersInOrder[0], "-400");
+    expectPlayerScore(playersInOrder[1], "100");
 
     fireEvent.click(screen.getByText(/Back to Grid/i));
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 });
 
 test("three players", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
-    addPlayers(["Alice", "Bob", "Carlos"]);
+    const playersToAdd = ["Alice", "Bob", "Carlos"];
+    addPlayers(playersToAdd);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+
+    const playersInOrder = getPlayerOrder(container);
+    expect(playersInOrder.length).toBe(playersToAdd.length);
+    for (let name of playersToAdd) {
+        expect(playersInOrder).toContain(name);
+    }
+
     const gridItems = screen.getAllByText("300");
     fireEvent.click(gridItems[0]);
     
     await screen.findByText("Q3");
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     fireEvent.click(screen.getByText("D3")); // correct answer
     await screen.findByText(/correct/i);
-    expectPlayerScore("Alice", "300");
-    expectPlayerScore("Bob", "0");
-    expectPlayerScore("Carlos", "0");
+    expectPlayerScore(playersInOrder[0], "300");
+    expectPlayerScore(playersInOrder[1], "0");
+    expectPlayerScore(playersInOrder[2], "0");
     
     fireEvent.click(screen.getByText(/Back to Grid/i));
-    // Bob's turn now
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    // Player 2's turn now
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument();
 
 });
 
 test("three players, four turns", async () => {
-    await act(() => {
-        render(<App />);
-    });
+    const {container} = render(<App />);
+    
     await act(() => {
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
-    addPlayers(["Alice", "Bob", "Carlos"]);
+    const playersToAdd = ["Alice", "Bob", "Carlos"];
+    addPlayers(playersToAdd);
 
     await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
     
     await screen.findByText("Q3");
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument();
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument();
     fireEvent.click(screen.getByText("D3")); // correct answer
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
     
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
 
@@ -362,7 +399,7 @@ test("three players, four turns", async () => {
     await screen.findByText(/incorrect/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Carlos/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Carlos's turn now
+    expect(screen.getByText(playersInOrder[2]).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Carlos's turn now
     const gridItems500 = screen.getAllByText("500");
     fireEvent.click(gridItems500[0]);
 
@@ -371,7 +408,7 @@ test("three players, four turns", async () => {
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Alice/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Alice's turn now
+    expect(screen.getByText(playersInOrder[0]).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Alice's turn now
     const gridItems400 = screen.getAllByText("400");
     fireEvent.click(gridItems400[0]);
 
@@ -380,8 +417,8 @@ test("three players, four turns", async () => {
     await screen.findByText(/correct/i);
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
-    expect(screen.getByText(/Bob/).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
-    expectPlayerScore("Alice", "700");
-    expectPlayerScore("Bob", "-100");
-    expectPlayerScore("Carlos", "500");
+    expect(screen.getByText(playersInOrder[1]).closest(".scoreboard-cell--active")).toBeInTheDocument(); // Bob's turn now
+    expectPlayerScore(playersInOrder[0], "700");
+    expectPlayerScore(playersInOrder[1], "-100");
+    expectPlayerScore(playersInOrder[2], "500");
 });

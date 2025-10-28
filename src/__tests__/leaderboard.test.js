@@ -2,7 +2,7 @@ import { act } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Leaderboard from "../Leaderboard";
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
+import { addPlayers, refreshPage, expectPlayerScore, getPlayerOrder } from "./basicIntegration.test.js";
 
 // Mock fetch for questions.json
 beforeEach(() => {
@@ -87,10 +87,13 @@ test("Automatically takes you to leaderboard page when all questions have been a
         fireEvent.click(screen.getByText(/Load Default Questions/i));
     });
 
-    addPlayers(["Alice", "Bob", "Carlos"]);
+    const playersToAdd = ["Alice", "Bob", "Carlos"];
+    addPlayers(playersToAdd);
 
     const questions = container.getElementsByClassName("button");
     expect(questions.length).toBe(5);
+
+    const playersInOrder = getPlayerOrder(container);
 
     // Answer each question
     for (let p=0; p<questions.length; p++) {
@@ -118,9 +121,9 @@ test("Automatically takes you to leaderboard page when all questions have been a
         expect(nameElt).toBeInTheDocument();
         let name = nameElt.textContent;
         if (i === 0) {
-            expect(name).toBe("Alice");
+            expect(name).toBe(playersInOrder[0]);
         } else {
-            expect(["Bob", "Carlos"]).toContain(name);
+            expect([playersInOrder[1], playersInOrder[2]]).toContain(name);
         }
     }
 });
