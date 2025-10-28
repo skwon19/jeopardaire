@@ -3,7 +3,7 @@ import GridPage from './GridPage';
 import Leaderboard from './Leaderboard';
 import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
-import QuestionsUploadPage from './QuestionsUploadPage';
+import QuestionsSelectionPage from './QuestionsSelectionPage';
 import { useEffect, useState } from "react";
 
 function App() {
@@ -225,7 +225,7 @@ function App() {
         <div>
         <h1>Jeopardaire</h1>
         {view === "questionEntry" && (
-            <QuestionsUploadPage 
+            <QuestionsSelectionPage 
                 onQuestionsLoaded={loadQuestions} 
                 useDefaultQuestions={loadDefaultQuestions}
             />

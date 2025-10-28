@@ -1,0 +1,182 @@
+[
+    {
+        "category": "Disney Villains",
+        "questions": [
+            {
+                "question": "Who is the villain in The Little Mermaid?",
+                "options": ["Maleficent", "Ursula", "Cruella de Vil", "Queen of Hearts"],
+                "answer": "B"
+            },
+            {
+                "question": "In The Lion King, who kills Mufasa?",
+                "options": ["Scar", "Hyenas", "Shenzi", "Zazu"],
+                "answer": "A"
+            },
+            {
+                "question": "Which Disney villain wanted to make a coat out of Dalmatian puppies?",
+                "options": ["Evil Queen", "Cruella de Vil", "Mother Gothel", "Lady Tremaine"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the name of the voodoo villain in The Princess and the Frog?",
+                "options": ["Jafar", "Dr. Facilier", "Gaston", "Hades"],
+                "answer": "B"
+            },
+            {
+                "question": "In Sleeping Beauty, Maleficent transforms into what creature?",
+                "options": ["Snake", "Dragon", "Wolf", "Crow"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Fictional Places",
+        "questions": [
+            {
+                "question": "In The Wizard of Oz, where does Dorothy travel after the tornado?",
+                "options": ["Narnia", "Oz", "Wonderland", "Neverland"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the name of the school in Harry Potter?",
+                "options": ["Durmstrang", "Hogwarts", "Beauxbatons", "Ilvermorny"],
+                "answer": "B"
+            },
+            {
+                "question": "In The Lord of the Rings, what is the name of the dark land ruled by Sauron?",
+                "options": ["Rohan", "Gondor", "Mordor", "Isengard"],
+                "answer": "C"
+            },
+            {
+                "question": "What is the name of the capital city in The Hunger Games?",
+                "options": ["Panem", "District 13", "Capitol", "Snowland"],
+                "answer": "C"
+            },
+            {
+                "question": "In Game of Thrones, which continent is King's Landing located on?",
+                "options": ["Westeros", "Essos", "Sothoryos", "Valyria"],
+                "answer": "A"
+            }
+        ]
+    },
+    {
+        "category": "Food & Drink",
+        "questions": [
+            {
+                "question": "What is the main ingredient in traditional Japanese miso soup?",
+                "options": ["Soybeans", "Rice", "Seaweed", "Fish"],
+                "answer": "A"
+            },
+            {
+                "question": "Which fruit is known as the 'king of fruits' in Southeast Asia?",
+                "options": ["Durian", "Mango", "Pineapple", "Papaya"],
+                "answer": "A"
+            },
+            {
+                "question": "What type of pastry is used to make a classic éclair?",
+                "options": ["Filo", "Choux", "Puff", "Shortcrust"],
+                "answer": "B"
+            },
+            {
+                "question": "What liquor is traditionally used in a Mojito cocktail?",
+                "options": ["Vodka", "Gin", "Rum", "Tequila"],
+                "answer": "C"
+            },
+            {
+                "question": "Which Italian cheese is aged in caves and known for its blue veins?",
+                "options": ["Parmigiano-Reggiano", "Gorgonzola", "Pecorino", "Asiago"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Geography",
+        "questions": [
+            {
+                "question": "What is the capital of France?",
+                "options": ["Rome", "Madrid", "Paris", "Berlin"],
+                "answer": "C"
+            },
+            {
+                "question": "Which continent is the Sahara Desert located in?",
+                "options": ["Asia", "Africa", "Australia", "South America"],
+                "answer": "B"
+            },
+            {
+                "question": "Mount Kilimanjaro is located in which country?",
+                "options": ["Kenya", "Tanzania", "Uganda", "Ethiopia"],
+                "answer": "B"
+            },
+            {
+                "question": "Which river is the longest in the world?",
+                "options": ["Amazon", "Nile", "Yangtze", "Mississippi"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the smallest country in the world by land area?",
+                "options": ["Monaco", "San Marino", "Liechtenstein", "Vatican City"],
+                "answer": "D"
+            }
+        ]
+    },
+    {
+        "category": "History",
+        "questions": [
+            {
+                "question": "Who was the first President of the United States?",
+                "options": ["Abraham Lincoln", "George Washington", "John Adams", "Thomas Jefferson"],
+                "answer": "B"
+            },
+            {
+                "question": "Which empire built the Colosseum?",
+                "options": ["Greek", "Egyptian", "Roman", "Byzantine"],
+                "answer": "C"
+            },
+            {
+                "question": "In what year did World War II end?",
+                "options": ["1943", "1945", "1947", "1950"],
+                "answer": "B"
+            },
+            {
+                "question": "The Magna Carta was signed in which century?",
+                "options": ["11th", "12th", "13th", "14th"],
+                "answer": "C"
+            },
+            {
+                "question": "Which civilization built Machu Picchu?",
+                "options": ["Aztec", "Maya", "Inca", "Olmec"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "TV & Movies",
+        "questions": [
+            {
+                "question": "In the TV show Friends, what is the name of Ross's second wife?",
+                "options": ["Emily", "Carol", "Rachel", "Janice"],
+                "answer": "A"
+            },
+            {
+                "question": "Which movie features the quote, 'Life is like a box of chocolates'?",
+                "options": ["Titanic", "Forrest Gump", "The Shawshank Redemption", "Good Will Hunting"],
+                "answer": "B"
+            },
+            {
+                "question": "In Breaking Bad, what is Walter White's street name?",
+                "options": ["Jesse", "Heisenberg", "Gus", "Tuco"],
+                "answer": "B"
+            },
+            {
+                "question": "Who directed the movie Inception?",
+                "options": ["Christopher Nolan", "Steven Spielberg", "Martin Scorsese", "Quentin Tarantino"],
+                "answer": "A"
+            },
+            {
+                "question": "In The Godfather, who says the famous line 'I'm gonna make him an offer he can't refuse'?",
+                "options": ["Sonny Corleone", "Michael Corleone", "Tom Hagen", "Vito Corleone"],
+                "answer": "D"
+            }
+        ]
+    }
+]

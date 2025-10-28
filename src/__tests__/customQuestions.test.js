@@ -3,6 +3,10 @@ import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/re
 import App from "../App";
 import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
 
+afterEach(() => {
+    jest.restoreAllMocks();
+});
+
 test("Upload custom JSON questions file", async () => {
     await act(() => {
         render(<App />);
@@ -106,4 +110,177 @@ test("Upload custom JSON questions file", async () => {
     // Back to grid
     fireEvent.click(screen.getByText(/Back to Grid/i));
 
+});
+
+test("Select categories from bank", async () => {
+    // Mock fetch for /sampleCategories.json
+    const fetchMock = jest.spyOn(globalThis, "fetch").mockImplementation((url) => {
+        if (url.includes("/sampleCategories.json")) {
+            return Promise.resolve({
+                json: () => Promise.resolve([
+                    {
+                        category: "History",
+                        questions: [
+                            {
+                                question: "History Q1",
+                                options: ["A1", "B1", "C1", "D1"],
+                                answer: "B"
+                            },
+                            {
+                                question: "History Q2",
+                                options: ["A2", "B2", "C2", "D2"],
+                                answer: "A"
+                            },
+                            {
+                                question: "History Q3",
+                                options: ["A3", "B3", "C3", "D3"],
+                                answer: "D"
+                            },
+                            {
+                                question: "History Q4",
+                                options: ["A4", "B4", "C4", "D4"],
+                                answer: "A"
+                            },
+                            {
+                                question: "History Q5",
+                                options: ["A5", "B5", "C5", "D5"],
+                                answer: "C"
+                            }
+                        ]
+                    },
+                    {
+                        category: "Disney Villains",
+                        questions: [
+                            {
+                                question: "Disney Villains Q1",
+                                options: ["A1", "B1", "C1", "D1"],
+                                answer: "B"
+                            },
+                            {
+                                question: "Disney Villains Q2",
+                                options: ["A2", "B2", "C2", "D2"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Disney Villains Q3",
+                                options: ["A3", "B3", "C3", "D3"],
+                                answer: "D"
+                            },
+                            {
+                                question: "Disney Villains Q4",
+                                options: ["A4", "B4", "C4", "D4"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Disney Villains Q5",
+                                options: ["A5", "B5", "C5", "D5"],
+                                answer: "C"
+                            }
+                        ]
+                    },
+                    {
+                        category: "Fictional Places",
+                        questions: [
+                            {
+                                question: "Fictional Places Q1",
+                                options: ["A1", "B1", "C1", "D1"],
+                                answer: "B"
+                            },
+                            {
+                                question: "Fictional Places Q2",
+                                options: ["A2", "B2", "C2", "D2"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Fictional Places Q3",
+                                options: ["A3", "B3", "C3", "D3"],
+                                answer: "D"
+                            },
+                            {
+                                question: "Fictional Places Q4",
+                                options: ["A4", "B4", "C4", "D4"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Fictional Places Q5",
+                                options: ["A5", "B5", "C5", "D5"],
+                                answer: "C"
+                            }
+                        ]
+                    },
+                    {
+                        category: "Food & Drink",
+                        questions: [
+                            {
+                                question: "Food & Drink Q1",
+                                options: ["A1", "B1", "C1", "D1"],
+                                answer: "B"
+                            },
+                            {
+                                question: "Food & Drink Q2",
+                                options: ["A2", "B2", "C2", "D2"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Food & Drink Q3",
+                                options: ["A3", "B3", "C3", "D3"],
+                                answer: "D"
+                            },
+                            {
+                                question: "Food & Drink Q4",
+                                options: ["A4", "B4", "C4", "D4"],
+                                answer: "A"
+                            },
+                            {
+                                question: "Food & Drink Q5",
+                                options: ["A5", "B5", "C5", "D5"],
+                                answer: "C"
+                            }
+                        ]
+                    }
+                ])
+            });
+        }
+        // Default mock for other fetches
+        return Promise.resolve({
+            json: () => Promise.resolve([])
+        });
+    });
+
+
+    await act(() => {
+        render(<App />);
+    });
+
+    fireEvent.click(screen.getByText(/History/i));
+    fireEvent.click(screen.getByText(/Disney Villains/i));
+    fireEvent.click(screen.getByText(/Fictional Places/i));
+    fireEvent.click(screen.getByText(/Disney Villains/i)); // Deselect
+    fireEvent.click(screen.getByText(/Food & Drink/i));
+
+    fireEvent.click(screen.getByText(/Use Selected Categories/i));
+
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    // Wait for the custom category to appear
+    await screen.findByText(/History/i);
+    await screen.findByText(/Fictional Places/i);
+    await screen.findByText(/Food & Drink/i);
+    expect(screen.queryByText(/Disney Villains/i)).not.toBeInTheDocument();
+    const gridItems = screen.getAllByText("200");
+    fireEvent.click(gridItems[0]);
+
+    // Wait for question page
+    await screen.findByText("History Q2");
+
+    // Select the correct answer
+    fireEvent.click(screen.getByText("A2"));
+
+    // Should show "correct"
+    await screen.findByText(/correct/i);
+
+    // Back to grid
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+
+    fetchMock.mockRestore(); // Restore fetch after this test
 });
