@@ -616,3 +616,302 @@ test("Use 50:50 then penalty", async() => {
     expectPlayerScore(playersInOrder[0], "100");
     expectPlayerScore(playersInOrder[1], "0");
 });
+
+test("Ask the audience lifeline", async() => {
+    const {container} = render(<App />);
+    
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+
+    await screen.findByText("Q3");
+    let lifelineButton = screen.getByText(/Ask the Audience/i);
+    fireEvent.click(lifelineButton);
+
+    // Expect AudiencePoll page for player 2
+    await screen.findByText(playersInOrder[1]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("A3"));
+
+    // Expect AudiencePoll page for player 3
+    await screen.findByText(playersInOrder[2]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("D3"));
+
+    // Expect histogram of results
+    await screen.findByText(/Ask the Audience Results/i);
+    const barsDiv = container.getElementsByClassName("audience-histogram-bars")[0];
+    const bars = Array.from(barsDiv.children);
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    fireEvent.click(screen.getByText(/Close Poll/i));
+    await screen.findByText("Q3");
+    lifelineButton = screen.getByText(/Ask the Audience/i);
+    await waitFor(() => { // Greyed out after 1 use
+        expect(lifelineButton).toHaveClass("used");
+    });
+
+    fireEvent.click(screen.getByText("A3"));
+    await screen.findByText("INCORRECT");
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});
+
+test("Ask the audience, refresh during 2nd person's poll", async() => {
+    const {container} = render(<App />);
+    
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+
+    await screen.findByText("Q3");
+    let lifelineButton = screen.getByText(/Ask the Audience/i);
+    fireEvent.click(lifelineButton);
+
+    // Expect AudiencePoll page for player 2
+    await screen.findByText(playersInOrder[1]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("A3"));
+
+    // Expect AudiencePoll page for player 3
+    await screen.findByText(playersInOrder[2]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    await refreshPage();
+
+    await screen.findByText(playersInOrder[2]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("D3"));
+
+    // Expect histogram of results
+    await screen.findByText(/Ask the Audience Results/i);
+    const barsDiv = document.getElementsByClassName("audience-histogram-bars")[0];
+    const bars = Array.from(barsDiv.children);
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    fireEvent.click(screen.getByText(/Close Poll/i));
+    await screen.findByText("Q3");
+    lifelineButton = screen.getByText(/Ask the Audience/i);
+    await waitFor(() => { // Greyed out after 1 use
+        expect(lifelineButton).toHaveClass("used");
+    });
+
+    fireEvent.click(screen.getByText("A3"));
+    await screen.findByText("INCORRECT");
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});
+
+test("Ask the audience, refresh during histogram", async() => {
+    const {container} = render(<App />);
+    
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+
+    await screen.findByText("Q3");
+    let lifelineButton = screen.getByText(/Ask the Audience/i);
+    fireEvent.click(lifelineButton);
+
+    // Expect AudiencePoll page for player 2
+    await screen.findByText(playersInOrder[1]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("A3"));
+
+    // Expect AudiencePoll page for player 3
+    await screen.findByText(playersInOrder[2]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("D3"));
+
+    // Expect histogram of results
+    await screen.findByText(/Ask the Audience Results/i);
+    let barsDiv = document.getElementsByClassName("audience-histogram-bars")[0];
+    let bars = Array.from(barsDiv.children);
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    await refreshPage();
+
+    await screen.findByText(/Ask the Audience Results/i);
+    barsDiv = document.getElementsByClassName("audience-histogram-bars")[0];
+    bars = Array.from(barsDiv.children);
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    fireEvent.click(screen.getByText(/Close Poll/i));
+    await screen.findByText("Q3");
+    lifelineButton = screen.getByText(/Ask the Audience/i);
+    await waitFor(() => { // Greyed out after 1 use
+        expect(lifelineButton).toHaveClass("used");
+    });
+
+    fireEvent.click(screen.getByText("A3"));
+    await screen.findByText("INCORRECT");
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});
+
+test("Clicking on answers when histogram is displayed does not change anything", async() => {
+    const {container} = render(<App />);
+    
+    await act(() => {
+        fireEvent.click(screen.getByText(/Load Default Questions/i));
+    });
+    addPlayers(["Alice", "Bob", "Carlos"]);
+
+    await screen.findByText((content) => content.includes("2000s Pop"));
+    const playersInOrder = getPlayerOrder(container);
+
+    const gridItems300 = screen.getAllByText("300");
+    fireEvent.click(gridItems300[0]);
+
+    await screen.findByText("Q3");
+    let lifelineButton = screen.getByText(/Ask the Audience/i);
+    fireEvent.click(lifelineButton);
+
+    // Expect AudiencePoll page for player 2
+    await screen.findByText(playersInOrder[1]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("A3"));
+
+    // Expect AudiencePoll page for player 3
+    await screen.findByText(playersInOrder[2]);
+    await screen.findByText(/please answer to the best of your ability/i);
+    await screen.findByText("Q3");
+    fireEvent.click(screen.getByText("D3"));
+
+    // Expect histogram of results
+    await screen.findByText(/Ask the Audience Results/i);
+    const barsDiv = container.getElementsByClassName("audience-histogram-bars")[0];
+    const bars = Array.from(barsDiv.children);
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    fireEvent.click(screen.getByText("A3")); // Clicking answers should do nothing
+    
+    // Histogram should still be displayed unchanged
+    expect(bars.length).toBe(4);
+    for (let i = 0; i < bars.length; i++) {
+        let bar = bars[i];
+        let label = bar.getElementsByClassName("audience-histogram-label")[0];
+        expect(label).toBeInTheDocument();
+        expect(label.textContent).toBe(String.fromCharCode(65 + i));
+        let count = bar.getElementsByClassName("audience-histogram-count")[0];
+        expect(count).toBeInTheDocument();
+        if (label.textContent === "A") {
+            expect(count.textContent).toBe("1");
+        } else if (label.textContent === "D") {
+            expect(count.textContent).toBe("1");
+        } else {
+            expect(count.textContent).toBe("0");
+        }
+    }
+
+    fireEvent.click(screen.getByText(/Close Poll/i));
+    await screen.findByText("Q3");
+    lifelineButton = screen.getByText(/Ask the Audience/i);
+    await waitFor(() => { // Greyed out after 1 use
+        expect(lifelineButton).toHaveClass("used");
+    });
+
+    fireEvent.click(screen.getByText("A3"));
+    await screen.findByText("INCORRECT");
+    fireEvent.click(screen.getByText(/Back to Grid/i));
+});

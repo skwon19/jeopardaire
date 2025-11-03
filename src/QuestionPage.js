@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import './QuestionPage.css';
 import Scoreboard from "./Scoreboard";
 import LifeLinesComponent from "./LifelinesComponent";
+import QuestionComponent from "./QuestionComponent";
 
 const QuestionPage = ({ 
     questions, 
@@ -18,7 +19,8 @@ const QuestionPage = ({
     setFeedbacks,
     lifelinesUsed,
     setLifelinesUsed,
-    penalties
+    penalties,
+    handleAskAudience
 }) => {
 
     const [validAnswer, setValidAnswer] = useState(() => {
@@ -70,28 +72,6 @@ const QuestionPage = ({
         setValidAnswer(Array(4).fill(true)); // Reset valid answers for next question
     }
 
-    const optionTags = (idx) => {
-        if (selectedAnswers[row-1][col] === null) {
-            if (validAnswer[idx]) {
-                return "";
-            } else {
-                return " option-invalid";
-            }
-        } else {
-            if (selectedAnswers[row-1][col] === idx) {
-                if (idx === correctAnswer) {
-                    return " option-correct";
-                } else {
-                    return " option-incorrect";
-                }
-            } else if (idx === correctAnswer) {
-                return " option-correct";
-            } else {
-                return "";
-            }
-        }
-    }
-
     const invalidateAnswers = (indices) => {
         const newValid = [...validAnswer];
         indices.forEach(idx => {
@@ -103,21 +83,14 @@ const QuestionPage = ({
     return (
         <div className="question-page">
             <h2>{category.category}, {row * 100} points</h2>
-            <p>{questionObj.question}</p>
-            <div className="options">
-                {options.map((option, idx) => (
-                    <div 
-                        key={idx} 
-                        className={
-                            "option" + optionTags(idx)
-                        }
-                        onClick={() => handleSelect(idx)}
-                        style={{ cursor: selectedAnswers[row-1][col] === null ? "pointer" : "default" }}
-                    >
-                        <span className="option-label">{String.fromCharCode(65 + idx)}.</span> {option}
-                    </div>
-                ))}
-            </div>
+            <QuestionComponent
+                question={questionObj.question}
+                selectedAnswer={selectedAnswers[row-1][col]}
+                handleSelect={handleSelect}
+                validAnswer={validAnswer}
+                correctAnswer={correctAnswer}
+                options={options}
+            />
             {selectedAnswers[row-1][col] !== null && (
                 <>
                     <div className={`feedback ${feedbacks[row-1][col] === "CORRECT" ? "correct" : "incorrect"}`}>
@@ -142,6 +115,7 @@ const QuestionPage = ({
                 setLifelinesUsed={setLifelinesUsed}
                 currentPlayer={currentPlayer}
                 penalties={penalties}
+                handleAskAudience={handleAskAudience}
             />
             <Scoreboard players={players} scores={scores} currentPlayer={currentPlayer} />
         </div>

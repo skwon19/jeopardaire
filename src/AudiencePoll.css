@@ -1,0 +1,46 @@
+.ask-audience {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.audience-histogram {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.audience-histogram h2 {
+    margin-bottom: 1.5rem;
+}
+
+.audience-histogram-bars {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    height: 150px;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.audience-histogram-bar {
+    width: 40px;
+    background: #0074d9;
+    border-radius: 6px;
+    transition: height 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.audience-histogram-label {
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.audience-histogram-count {
+    font-size: 1.1em;
+    color: #333;
+}

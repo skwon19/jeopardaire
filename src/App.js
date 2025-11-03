@@ -1,4 +1,5 @@
 import './App.css';
+import AudiencePoll from './AudiencePoll';
 import GridPage from './GridPage';
 import Leaderboard from './Leaderboard';
 import PlayerEntryPage from './PlayerEntryPage';
@@ -38,7 +39,7 @@ function App() {
 
     const [view, setView] = useState(() => {
         const saved = localStorage.getItem("view");
-        return saved ? JSON.parse(saved) : "questionEntry"; // "questionEntry", "playerEntry", "grid", "question," "leaderboard"
+        return saved ? JSON.parse(saved) : "questionEntry";
     });
 
     const [questionCoords, setQuestionCoords] = useState(() => {
@@ -62,6 +63,23 @@ function App() {
     const [penalties, setPenalties] = useState(() => {
         const saved = localStorage.getItem("penalties");
         return saved ? JSON.parse(saved) : [];
+    });
+
+    const [audiencePollActive, setAudiencePollActive] = useState(() => {
+        const saved = localStorage.getItem("audiencePollActive");
+        return saved ? JSON.parse(saved) : false;
+    });
+    const [audiencePollIndex, setAudiencePollIndex] = useState(() => {
+        const saved = localStorage.getItem("audiencePollIndex");
+        return saved ? JSON.parse(saved) : 0;
+    });
+    const [audiencePollAnswers, setAudiencePollAnswers] = useState(() => {
+        const saved = localStorage.getItem("audiencePollAnswers");
+        return saved ? JSON.parse(saved) : Array(4).fill(0);
+    });
+    const [showHistogram, setShowHistogram] = useState(() => {
+        const saved = localStorage.getItem("showHistogram");
+        return saved ? JSON.parse(saved) : false;
     });
 
     useEffect(() => { // After questions load, populate seenQuestions, selectAnswer, feedbacks if empty
@@ -132,12 +150,30 @@ function App() {
         localStorage.setItem("penalties", JSON.stringify(penalties));
     }, [penalties]);
 
+    useEffect(() => {
+        localStorage.setItem("audiencePollActive", JSON.stringify(audiencePollActive));
+    }, [audiencePollActive]);
+    
+    useEffect(() => {
+        localStorage.setItem("audiencePollIndex", JSON.stringify(audiencePollIndex));
+    }, [audiencePollIndex]);
+
+    useEffect(() => {
+        localStorage.setItem("audiencePollAnswers", JSON.stringify(audiencePollAnswers));
+    }, [audiencePollAnswers]);
+
+    useEffect(() => {
+        localStorage.setItem("showHistogram", JSON.stringify(showHistogram));
+    }, [showHistogram]);
+
     // Decide which view to show based on state
     useEffect(() => {
         if (questions.length === 0) {
             setView("questionEntry");
         } else if (players.length === 0) {
             setView("playerEntry");
+        } else if (audiencePollActive) {
+            setView("audiencePoll");
         } else if (questionCoords.row !== null && questionCoords.col !== null) {
             setView("question");
         } else if (allQuestionsSeen()) {
@@ -198,6 +234,20 @@ function App() {
         setView("grid");
     };
 
+    const handleAudiencePollStart = () => {
+        setAudiencePollActive(true);
+        setAudiencePollIndex(0);
+        setAudiencePollAnswers(Array(4).fill(0));
+        setView("audiencePoll");
+    }
+
+    const handleAudiencePollClose = () => {
+        setAudiencePollActive(false);
+        setAudiencePollIndex(0);
+        setAudiencePollAnswers(Array(4).fill(0));
+        setView("question");
+    }
+
     const initializePlayers = (playerObjs) => {
         const playerNames = []
         const playerPenalties = []
@@ -215,7 +265,8 @@ function App() {
         playerObjs.forEach(() => {
             defaultLifelines.push({
                 "50:50": false,
-                "phone": false
+                "phone": false,
+                "audience": false
             });
         });
         setLifelinesUsed(defaultLifelines);
@@ -262,6 +313,24 @@ function App() {
                 lifelinesUsed={lifelinesUsed}
                 setLifelinesUsed={setLifelinesUsed}
                 penalties={penalties}
+                handleAskAudience={handleAudiencePollStart}
+            />
+        )}
+        {view === "audiencePoll" && (
+            <AudiencePoll
+                players={players}
+                currentPlayer={currentPlayer}
+                audiencePollIndex={audiencePollIndex}
+                setAudiencePollIndex={setAudiencePollIndex}
+                audiencePollAnswers={audiencePollAnswers}
+                setAudiencePollAnswers={setAudiencePollAnswers}
+                question={questions[questionCoords.col]?.questions?.[questionCoords.row-1].question}
+                validAnswer={localStorage.getItem("validAnswer") ? JSON.parse(localStorage.getItem("validAnswer")) : Array(4).fill(true)}
+                correctAnswer={questions[questionCoords.col]?.questions?.[questionCoords.row-1].answer.charCodeAt(0) - 65}
+                options={questions[questionCoords.col]?.questions?.[questionCoords.row-1].options}
+                onFinishPoll={handleAudiencePollClose}
+                showHistogram={showHistogram}
+                setShowHistogram={setShowHistogram}
             />
         )}
         {view === "leaderboard" && (

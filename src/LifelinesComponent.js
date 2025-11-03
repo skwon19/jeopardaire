@@ -7,7 +7,8 @@ const LifeLinesComponent = ({
     lifelinesUsed,
     setLifelinesUsed,
     currentPlayer,
-    penalties
+    penalties,
+    handleAskAudience
 }) => {
     const removeTwoWrongAnswers = () => { // Invalidate two wrong answers
         const wrongAnswers = [];
@@ -61,13 +62,25 @@ const LifeLinesComponent = ({
             <div
                 className={"lifeline" + (lifelinesUsed[currentPlayer]["phone"] ? " used" : "")}
                 onClick={() => {
-                    if (lifelinesUsed[currentPlayer]["50:50"]) return; // Already used
+                    if (lifelinesUsed[currentPlayer]["phone"]) return; // Already used
                     const newLifelines = {... lifelinesUsed};
                     newLifelines[currentPlayer]["phone"] = true;
                     setLifelinesUsed(newLifelines);
                 }}
             >
                 Phone a Friend (offline)
+            </div>
+            <div
+                className={"lifeline" + (lifelinesUsed[currentPlayer]["audience"] ? " used" : "")}
+                onClick={() => {
+                    if (lifelinesUsed[currentPlayer]["audience"]) return; // Already used
+                    handleAskAudience();
+                    const newLifelines = {... lifelinesUsed};
+                    newLifelines[currentPlayer]["audience"] = true;
+                    setLifelinesUsed(newLifelines);
+                }}
+            >
+                Ask the Audience
             </div>
             <div
                 className="lifeline"
