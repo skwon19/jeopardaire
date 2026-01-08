@@ -58,7 +58,7 @@ const PlayerEntryPage = ({ initializePlayers }) => {
 
     return (
         <div className="player-entry-page">
-            <h2>Enter Player Names and Penalties</h2>
+            <h2>Enter Player Names and Penalty Actions</h2>
             <form onSubmit={handleSubmit}>
                 {players.map((name, idx) => (
                     <div key={idx} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
@@ -73,7 +73,7 @@ const PlayerEntryPage = ({ initializePlayers }) => {
                             type="text"
                             value={players.penalty}
                             onChange={e => handleChange(idx, "penalty", e.target.value)}
-                            placeholder="Penalty (e.g. do 10 push-ups, tell a secret about yourself)"
+                            placeholder="Penalty action (e.g. Do 10 push-ups)"
                             required
                             style={{ width: "350px" }}
                         />

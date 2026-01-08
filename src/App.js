@@ -6,6 +6,9 @@ import PlayerEntryPage from './PlayerEntryPage';
 import QuestionPage from './QuestionPage';
 import QuestionsSelectionPage from './QuestionsSelectionPage';
 import { useEffect, useState } from "react";
+import NavBar from './NavBar';
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import InstructionsPage from './InstructionsPage';
 
 function App() {
     const numPointVals = 5; // points: 100 to 500
@@ -272,74 +275,87 @@ function App() {
         setLifelinesUsed(defaultLifelines);
     }
 
+    const serveGamePage = (view) => {
+        return (
+            <div>
+                {view === "questionEntry" && (
+                    <QuestionsSelectionPage 
+                        onQuestionsLoaded={loadQuestions} 
+                        useDefaultQuestions={loadDefaultQuestions}
+                    />
+                )}
+                {view === "playerEntry" && (
+                    <PlayerEntryPage initializePlayers={initializePlayers} />
+                )}
+                {view === "grid" && (
+                    <GridPage
+                        rows={numPointVals + 1}
+                        columns={headers.length}
+                        headers={headers}
+                        players={players}
+                        scores={scores}
+                        currentPlayer={currentPlayer}
+                        onQuestionSelect={handleQuestionSelect}
+                        seenQuestions={seenQuestions}
+                    />
+                )}
+                {view === "question" && (
+                    <QuestionPage
+                        questions={questions}
+                        scores={scores}
+                        setScores={setScores}
+                        currentPlayer={currentPlayer}
+                        players={players}
+                        row={questionCoords.row}
+                        col={questionCoords.col}
+                        onClose={handleQuestionClose}
+                        selectedAnswers={selectedAnswers}
+                        setSelectedAnswers={setSelectedAnswers}
+                        feedbacks={feedbacks}
+                        setFeedbacks={setFeedbacks}
+                        lifelinesUsed={lifelinesUsed}
+                        setLifelinesUsed={setLifelinesUsed}
+                        penalties={penalties}
+                        handleAskAudience={handleAudiencePollStart}
+                    />
+                )}
+                {view === "audiencePoll" && (
+                    <AudiencePoll
+                        players={players}
+                        currentPlayer={currentPlayer}
+                        audiencePollIndex={audiencePollIndex}
+                        setAudiencePollIndex={setAudiencePollIndex}
+                        audiencePollAnswers={audiencePollAnswers}
+                        setAudiencePollAnswers={setAudiencePollAnswers}
+                        question={questions[questionCoords.col]?.questions?.[questionCoords.row-1].question}
+                        validAnswer={localStorage.getItem("validAnswer") ? JSON.parse(localStorage.getItem("validAnswer")) : Array(4).fill(true)}
+                        correctAnswer={questions[questionCoords.col]?.questions?.[questionCoords.row-1].answer.charCodeAt(0) - 65}
+                        options={questions[questionCoords.col]?.questions?.[questionCoords.row-1].options}
+                        onFinishPoll={handleAudiencePollClose}
+                        showHistogram={showHistogram}
+                        setShowHistogram={setShowHistogram}
+                    />
+                )}
+                {view === "leaderboard" && (
+                    <Leaderboard
+                        players={players}
+                        scores={scores}
+                    />
+                )}
+            </div>
+        );
+    }
+
     return (
-        <div>
-        <h1>Jeopardaire</h1>
-        {view === "questionEntry" && (
-            <QuestionsSelectionPage 
-                onQuestionsLoaded={loadQuestions} 
-                useDefaultQuestions={loadDefaultQuestions}
-            />
-        )}
-        {view === "playerEntry" && (
-            <PlayerEntryPage initializePlayers={initializePlayers} />
-        )}
-        {view === "grid" && (
-            <GridPage
-                rows={numPointVals + 1}
-                columns={headers.length}
-                headers={headers}
-                players={players}
-                scores={scores}
-                currentPlayer={currentPlayer}
-                onQuestionSelect={handleQuestionSelect}
-                seenQuestions={seenQuestions}
-            />
-        )}
-        {view === "question" && (
-            <QuestionPage
-                questions={questions}
-                scores={scores}
-                setScores={setScores}
-                currentPlayer={currentPlayer}
-                players={players}
-                row={questionCoords.row}
-                col={questionCoords.col}
-                onClose={handleQuestionClose}
-                selectedAnswers={selectedAnswers}
-                setSelectedAnswers={setSelectedAnswers}
-                feedbacks={feedbacks}
-                setFeedbacks={setFeedbacks}
-                lifelinesUsed={lifelinesUsed}
-                setLifelinesUsed={setLifelinesUsed}
-                penalties={penalties}
-                handleAskAudience={handleAudiencePollStart}
-            />
-        )}
-        {view === "audiencePoll" && (
-            <AudiencePoll
-                players={players}
-                currentPlayer={currentPlayer}
-                audiencePollIndex={audiencePollIndex}
-                setAudiencePollIndex={setAudiencePollIndex}
-                audiencePollAnswers={audiencePollAnswers}
-                setAudiencePollAnswers={setAudiencePollAnswers}
-                question={questions[questionCoords.col]?.questions?.[questionCoords.row-1].question}
-                validAnswer={localStorage.getItem("validAnswer") ? JSON.parse(localStorage.getItem("validAnswer")) : Array(4).fill(true)}
-                correctAnswer={questions[questionCoords.col]?.questions?.[questionCoords.row-1].answer.charCodeAt(0) - 65}
-                options={questions[questionCoords.col]?.questions?.[questionCoords.row-1].options}
-                onFinishPoll={handleAudiencePollClose}
-                showHistogram={showHistogram}
-                setShowHistogram={setShowHistogram}
-            />
-        )}
-        {view === "leaderboard" && (
-            <Leaderboard
-                players={players}
-                scores={scores}
-            />
-        )}
-        </div>
+        <Router>
+            <div>
+                <NavBar />
+                <Routes>
+                    <Route path="/help" element={<InstructionsPage/>} />
+                    <Route path="/" element={serveGamePage(view)} />
+                </Routes>
+            </div>
+        </Router>
     );
 }
 
