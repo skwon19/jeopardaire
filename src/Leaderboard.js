@@ -28,7 +28,7 @@ const Leaderboard = ({ players, scores }) => {
                     {idx === 0 && <span className="leaderboard-winner">WINNER</span>}
                 </div>
             ))}
-            <button onClick={playAgain}>Play again</button>
+            <button className="play-again-btn" onClick={playAgain}>Play again</button>
         </div>
     );
 };

@@ -34,9 +34,6 @@ const AudiencePoll = ({
 
     return (
         <div className="ask-audience">
-            <button onClick={() => {
-                console.log("Audience poll answers", audiencePollAnswers);
-            }}>Audience poll answers</button>
             {!showHistogram ? (
                 <h2><strong>{playersToPoll[audiencePollIndex]}</strong>, please answer to the best of your ability</h2>
             ) : (

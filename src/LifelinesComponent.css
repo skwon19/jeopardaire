@@ -1,5 +1,4 @@
 .lifeline-container {
-    /* display: flex; */
     gap: 16px;
     margin-top: 32px;
 }
@@ -12,6 +11,10 @@
 }
 
 .lifeline.used {
-    background-color: #ccc !important;
-    color: #888;
+    background-color: var(--invalid-bg) !important;
+    color: var(--invalid-text);
+}
+
+.lifeline:hover {
+    background: var(--hover-bg);
 }

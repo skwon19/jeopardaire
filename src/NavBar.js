@@ -7,7 +7,7 @@ const NavBar = () => {
             <div className="nav-left">
                 {/* <span className="nav-title">Jeopardaire</span> */}
                 <a href="/" className="home">
-                    <span className="nav-title">Jeopardaire</span>
+                    <span className="nav-title">JEOPARDAIRE</span>
                 </a>
             </div>
             <div className="nav-right">

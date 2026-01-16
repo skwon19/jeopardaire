@@ -97,7 +97,7 @@ const QuestionPage = ({
                         {feedbacks[row-1][col]}
                     </div>
                     <button
-                        className="back-to-grid-btn"
+                        className="back-to-grid-btn selected"
                         style={{ marginTop: "1.5rem" }}
                         onClick={() => {
                             onClose();

@@ -5,6 +5,7 @@
     justify-content: center;
     min-height: 100vh;
     font-size: 1.25rem;
+    color: var(--light-text);
 }
 
 .question-page h2 {
@@ -19,22 +20,23 @@
 }
 
 .question-component .options {
-    /* width: 100%; */
+    width: 100%;
     max-width: 400px;
+    margin: 0 auto;
 }
 
 .question-component .option {
     margin: 0.5rem 0;
     padding: 0.75rem 1rem;
-    background: #fff;
+    background: var(--background-color);
     border-radius: 6px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--hover-bg);
     transition: background 0.2s;
     cursor: pointer;
 }
 
 .question-page .option:hover {
-    background: #e6f0fa;
+    background: var(--hover-bg);
 }
 
 .question-page .option-label {
@@ -53,8 +55,8 @@
 }
 
 .option-invalid {
-    background-color: #ccc !important;
-    color: #888;
+    background-color: var(--invalid-bg) !important;
+    color: var(--invalid-text);
 }
 
 .feedback {
@@ -74,9 +76,8 @@
 .back-to-grid-btn {
     margin: 0.5rem 0;
     padding: 0.75rem 1rem;
-    background: #fff;
     border-radius: 6px;
-    border: 1px solid #ddd;
     transition: background 0.2s;
     cursor: pointer;
+    color: var(--light-text);
 }

@@ -2,7 +2,7 @@ import './InstructionsPage.css';
 
 const InstructionsPage = () => {
     return (
-        <div>
+        <div className="instructions-page">
             <p>
                 Test your knowledge against your friends in Jeopardaire! 
                 A cross between the popular shows <cite>Jeopardy!</cite> and <cite>Who Wants to Be a Millionaire?</cite>, 

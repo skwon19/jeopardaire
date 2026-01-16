@@ -2,8 +2,9 @@
     max-width: 400px;
     margin: 0 auto;
     padding: 24px;
-    background: #f9f9f9;
+    background: var(--background-color);
     border-radius: 12px;
+    color: var(--light-text);
 }
 
 .leaderboard-row {
@@ -16,10 +17,10 @@
 }
 
 .leaderboard-row--winner {
-    background: #ffe066;
-    font-weight: bold;
+    font-weight: bold !important;
     border-radius: 8px;
-    border: 2px solid #ffae00;
+    background: var(--selected-bg) !important;
+    border: var(--selected-border) !important;
 }
 
 .leaderboard-name {
@@ -36,4 +37,8 @@
     color: #ffae00;
     font-weight: bold;
     font-size: 1em;
+}
+
+.play-again-btn {
+    font-size: 1.2em;
 }
