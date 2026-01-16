@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import NavBar from './NavBar';
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import InstructionsPage from './InstructionsPage';
-import AbandonGameButton from './AbandonGameButton';
 
 function App() {
     const numPointVals = 5; // points: 100 to 500
@@ -286,68 +285,56 @@ function App() {
                     />
                 )}
                 {view === "playerEntry" && (
-                    <div>
-                        <PlayerEntryPage initializePlayers={initializePlayers} />
-                        <AbandonGameButton/>
-                    </div>
+                    <PlayerEntryPage initializePlayers={initializePlayers} />
                 )}
                 {view === "grid" && (
-                    <div>
-                        <GridPage
-                            rows={numPointVals + 1}
-                            columns={headers.length}
-                            headers={headers}
-                            players={players}
-                            scores={scores}
-                            currentPlayer={currentPlayer}
-                            onQuestionSelect={handleQuestionSelect}
-                            seenQuestions={seenQuestions}
-                        />
-                        <AbandonGameButton/>
-                    </div>
+                    <GridPage
+                        rows={numPointVals + 1}
+                        columns={headers.length}
+                        headers={headers}
+                        players={players}
+                        scores={scores}
+                        currentPlayer={currentPlayer}
+                        onQuestionSelect={handleQuestionSelect}
+                        seenQuestions={seenQuestions}
+                    />
                 )}
                 {view === "question" && (
-                    <div>
-                        <QuestionPage
-                            questions={questions}
-                            scores={scores}
-                            setScores={setScores}
-                            currentPlayer={currentPlayer}
-                            players={players}
-                            row={questionCoords.row}
-                            col={questionCoords.col}
-                            onClose={handleQuestionClose}
-                            selectedAnswers={selectedAnswers}
-                            setSelectedAnswers={setSelectedAnswers}
-                            feedbacks={feedbacks}
-                            setFeedbacks={setFeedbacks}
-                            lifelinesUsed={lifelinesUsed}
-                            setLifelinesUsed={setLifelinesUsed}
-                            penalties={penalties}
-                            handleAskAudience={handleAudiencePollStart}
-                        />
-                        <AbandonGameButton/>
-                    </div>
+                    <QuestionPage
+                        questions={questions}
+                        scores={scores}
+                        setScores={setScores}
+                        currentPlayer={currentPlayer}
+                        players={players}
+                        row={questionCoords.row}
+                        col={questionCoords.col}
+                        onClose={handleQuestionClose}
+                        selectedAnswers={selectedAnswers}
+                        setSelectedAnswers={setSelectedAnswers}
+                        feedbacks={feedbacks}
+                        setFeedbacks={setFeedbacks}
+                        lifelinesUsed={lifelinesUsed}
+                        setLifelinesUsed={setLifelinesUsed}
+                        penalties={penalties}
+                        handleAskAudience={handleAudiencePollStart}
+                    />
                 )}
                 {view === "audiencePoll" && (
-                    <div>
-                        <AudiencePoll
-                            players={players}
-                            currentPlayer={currentPlayer}
-                            audiencePollIndex={audiencePollIndex}
-                            setAudiencePollIndex={setAudiencePollIndex}
-                            audiencePollAnswers={audiencePollAnswers}
-                            setAudiencePollAnswers={setAudiencePollAnswers}
-                            question={questions[questionCoords.col]?.questions?.[questionCoords.row-1].question}
-                            validAnswer={localStorage.getItem("validAnswer") ? JSON.parse(localStorage.getItem("validAnswer")) : Array(4).fill(true)}
-                            correctAnswer={questions[questionCoords.col]?.questions?.[questionCoords.row-1].answer.charCodeAt(0) - 65}
-                            options={questions[questionCoords.col]?.questions?.[questionCoords.row-1].options}
-                            onFinishPoll={handleAudiencePollClose}
-                            showHistogram={showHistogram}
-                            setShowHistogram={setShowHistogram}
-                        />
-                        <AbandonGameButton/>
-                    </div>
+                    <AudiencePoll
+                        players={players}
+                        currentPlayer={currentPlayer}
+                        audiencePollIndex={audiencePollIndex}
+                        setAudiencePollIndex={setAudiencePollIndex}
+                        audiencePollAnswers={audiencePollAnswers}
+                        setAudiencePollAnswers={setAudiencePollAnswers}
+                        question={questions[questionCoords.col]?.questions?.[questionCoords.row-1].question}
+                        validAnswer={localStorage.getItem("validAnswer") ? JSON.parse(localStorage.getItem("validAnswer")) : Array(4).fill(true)}
+                        correctAnswer={questions[questionCoords.col]?.questions?.[questionCoords.row-1].answer.charCodeAt(0) - 65}
+                        options={questions[questionCoords.col]?.questions?.[questionCoords.row-1].options}
+                        onFinishPoll={handleAudiencePollClose}
+                        showHistogram={showHistogram}
+                        setShowHistogram={setShowHistogram}
+                    />
                 )}
                 {view === "leaderboard" && (
                     <Leaderboard
@@ -362,7 +349,7 @@ function App() {
     return (
         <Router>
             <div>
-                <NavBar />
+                <NavBar view={view} />
                 <Routes>
                     <Route path="/help" element={<InstructionsPage/>} />
                     <Route path="/" element={serveGamePage(view)} />

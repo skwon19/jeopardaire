@@ -1,39 +1,69 @@
 .nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
 }
 
 .nav-title {
-  font-size: 20px;
-  font-weight: 700;
-  display: inline-flex;
-  color: var(--light-text);
+    font-size: 20px;
+    font-weight: 700;
+    display: inline-flex;
+    color: var(--light-text);
 }
 
 .help-link {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .help-icon {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.14);
-  color: var(--light-text);
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+    color: var(--light-text);
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1;
 }
 
 .help-link:focus .help-icon,
-.help-link:hover .help-icon {
-  background: rgba(255,255,255,0.22);
+.help-link:hover .help-icon,
+.exit-container:hover,
+.exit-container:focus {
+    background: rgba(255,255,255,0.22);
+}
+
+.exit-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+    overflow: hidden;
+}
+
+.abandon-game-btn {
+    width: 18px;
+    height: 18px;
+    display: block;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    object-fit: contain;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
