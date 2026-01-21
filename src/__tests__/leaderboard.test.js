@@ -80,6 +80,21 @@ describe("Leaderboard", () => {
     });
 });
 
+describe("Leaderboard tie", () => {
+    const players = ["Alice", "Bob", "Chloe", "Dev"];
+    const scores = [200, -100, 500, 500]
+
+    test("Multiple winners in case of tie", () => {
+        render(<Leaderboard players={players} scores={scores} />);
+        const cRow = screen.getByText("Chloe").closest(".leaderboard-row");
+        expect(cRow).toHaveClass("leaderboard-row--winner");
+        const dRow = screen.getByText("Dev").closest(".leaderboard-row");
+        expect(dRow).toHaveClass("leaderboard-row--winner");
+        const winners = screen.getAllByText("WINNER");
+        expect(winners.length).toBe(2);
+    });
+});
+
 test("Automatically takes you to leaderboard page when all questions have been answered", async () => {
     const {container} = render(<App />);
 

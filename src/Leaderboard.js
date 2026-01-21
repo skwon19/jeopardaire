@@ -7,6 +7,8 @@ const Leaderboard = ({ players, scores }) => {
         score: scores[idx] ?? 0
     })).sort((a, b) => b.score - a.score);
 
+    const winningScore = results[0].score;
+
     const playAgain = () => {
         localStorage.clear();
         window.location.reload();
@@ -20,12 +22,12 @@ const Leaderboard = ({ players, scores }) => {
                     key={player.name}
                     className={
                         "leaderboard-row" +
-                        (idx === 0 ? " leaderboard-row--winner" : "")
+                        (player.score === winningScore ? " leaderboard-row--winner" : "")
                     }
                 >
                     <span className="leaderboard-name">{player.name}</span>
                     <span className="leaderboard-score">{player.score}</span>
-                    {idx === 0 && <span className="leaderboard-winner">WINNER</span>}
+                    {player.score === winningScore && <span className="leaderboard-winner">WINNER</span>}
                 </div>
             ))}
             <button className="play-again-btn" onClick={playAgain}>Play again</button>
