@@ -89,7 +89,7 @@ const QuestionsSelectionPage = ({
                 <h2><b>OR</b> Upload Your Own Questions</h2>
                 <input type="file" accept=".json,application/json" onChange={handleFileChange} aria-label="jsonUpload" />
                 {error && <div className="error">{error}</div>}
-                <button onClick={() => {onQuestionsLoaded(fileContent)}}>Use JSON file</button>
+                <button disabled={fileContent===null} onClick={() => {onQuestionsLoaded(fileContent)}}>Use JSON file</button>
             </div>
         </div>
     );
