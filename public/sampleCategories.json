@@ -178,5 +178,455 @@
                 "answer": "D"
             }
         ]
+    },
+    {
+        "category": "World Languages",
+        "questions": [
+            {
+                "question": "Which language has the most native speakers worldwide?",
+                "options": ["English", "Spanish", "Mandarin Chinese", "Hindi"],
+                "answer": "C"
+            },
+            {
+                "question": "What language is primarily spoken in Brazil?",
+                "options": ["Spanish", "Portuguese", "French", "Italian"],
+                "answer": "B"
+            },
+            {
+                "question": "Which of these languages uses the Cyrillic alphabet?",
+                "options": ["Polish", "Hungarian", "Russian", "Turkish"],
+                "answer": "C"
+            },
+            {
+                "question": "What is the German word for 'thank you'?",
+                "options": ["Bitte", "Danke", "Hallo", "Tschüss"],
+                "answer": "B"
+            },
+            {
+                "question": "Which language family does Arabic belong to?",
+                "options": ["Indo-European", "Altaic", "Afro-Asiatic", "Uralic"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Capital Cities",
+        "questions": [
+            {
+                "question": "What is the capital of Japan?",
+                "options": ["Kyoto", "Osaka", "Tokyo", "Nagoya"],
+                "answer": "C"
+            },
+            {
+                "question": "What is the capital of Canada?",
+                "options": ["Toronto", "Vancouver", "Montreal", "Ottawa"],
+                "answer": "D"
+            },
+            {
+                "question": "What is the capital of Australia?",
+                "options": ["Sydney", "Melbourne", "Canberra", "Perth"],
+                "answer": "C"
+            },
+            {
+                "question": "What is the capital of Argentina?",
+                "options": ["Santiago", "Buenos Aires", "Montevideo", "Lima"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the capital of Kazakhstan?",
+                "options": ["Almaty", "Tashkent", "Astana", "Bishkek"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Chemistry",
+        "questions": [
+            {
+                "question": "What is the chemical symbol for oxygen?",
+                "options": ["O", "Ox", "Og", "O2"],
+                "answer": "A"
+            },
+            {
+                "question": "What is the pH of a neutral solution?",
+                "options": ["0", "7", "10", "14"],
+                "answer": "B"
+            },
+            {
+                "question": "Which bond involves the sharing of electrons?",
+                "options": ["Ionic", "Covalent", "Hydrogen", "Metallic"],
+                "answer": "B"
+            },
+            {
+                "question": "What gas is released during photosynthesis?",
+                "options": ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"],
+                "answer": "B"
+            },
+            {
+                "question": "Which element has the highest electronegativity?",
+                "options": ["Oxygen", "Chlorine", "Fluorine", "Nitrogen"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Physics",
+        "questions": [
+            {
+                "question": "What force pulls objects toward Earth?",
+                "options": ["Magnetism", "Friction", "Gravity", "Inertia"],
+                "answer": "C"
+            },
+            {
+                "question": "What is the unit of force?",
+                "options": ["Joule", "Watt", "Newton", "Pascal"],
+                "answer": "C"
+            },
+            {
+                "question": "Who formulated the laws of motion?",
+                "options": ["Einstein", "Newton", "Galileo", "Tesla"],
+                "answer": "B"
+            },
+            {
+                "question": "What type of wave is light?",
+                "options": ["Sound", "Mechanical", "Electromagnetic", "Seismic"],
+                "answer": "C"
+            },
+            {
+                "question": "What does E = mc² describe?",
+                "options": ["Kinetic energy", "Potential energy", "Mass-energy equivalence", "Momentum"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Biology",
+        "questions": [
+            {
+                "question": "What is the basic unit of life?",
+                "options": ["Atom", "Cell", "Organ", "Tissue"],
+                "answer": "B"
+            },
+            {
+                "question": "Which organ pumps blood through the body?",
+                "options": ["Lung", "Brain", "Heart", "Liver"],
+                "answer": "C"
+            },
+            {
+                "question": "DNA stands for what?",
+                "options": ["Deoxyribonucleic Acid", "Dinucleic Acid", "Double Nitrogen Acid", "Dynamic Nucleic Acid"],
+                "answer": "A"
+            },
+            {
+                "question": "Which process converts glucose into energy?",
+                "options": ["Photosynthesis", "Respiration", "Digestion", "Fermentation"],
+                "answer": "B"
+            },
+            {
+                "question": "What organelle is known as the powerhouse of the cell?",
+                "options": ["Nucleus", "Ribosome", "Mitochondria", "Golgi apparatus"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "US History",
+        "questions": [
+            {
+                "question": "Who was the first U.S. president?",
+                "options": ["John Adams", "George Washington", "Thomas Jefferson", "James Madison"],
+                "answer": "B"
+            },
+            {
+                "question": "In what year did the American Civil War begin?",
+                "options": ["1776", "1812", "1861", "1914"],
+                "answer": "C"
+            },
+            {
+                "question": "What document begins with 'We the People'?",
+                "options": ["Declaration of Independence", "Bill of Rights", "Constitution", "Emancipation Proclamation"],
+                "answer": "C"
+            },
+            {
+                "question": "Who purchased Louisiana from France?",
+                "options": ["Washington", "Jefferson", "Lincoln", "Monroe"],
+                "answer": "B"
+            },
+            {
+                "question": "What Supreme Court case ended school segregation?",
+                "options": ["Roe v. Wade", "Brown v. Board of Education", "Plessy v. Ferguson", "Marbury v. Madison"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Grammar",
+        "questions": [
+            {
+                "question": "Which word is a noun?",
+                "options": ["Run", "Blue", "Happiness", "Quickly"],
+                "answer": "C"
+            },
+            {
+                "question": "Which sentence is punctuated correctly?",
+                "options": ["Lets eat, Grandma!", "Lets eat Grandma!", "Let's eat Grandma!", "Lets' eat, Grandma!"],
+                "answer": "A"
+            },
+            {
+                "question": "Which is a correct plural?",
+                "options": ["Cactuses", "Cacti", "Cactus'", "Cactis"],
+                "answer": "B"
+            },
+            {
+                "question": "Which word is an adverb?",
+                "options": ["Quick", "Quickly", "Quickness", "Quicken"],
+                "answer": "B"
+            },
+            {
+                "question": "Which sentence uses the subjunctive mood?",
+                "options": ["I was there", "If I were taller", "I am taller", "I will be taller"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Math (High School)",
+        "questions": [
+            {
+                "question": "What is 7 * 8?",
+                "options": ["54", "56", "64", "58"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the square root of 81?",
+                "options": ["7", "8", "9", "10"],
+                "answer": "C"
+            },
+            {
+                "question": "Solve for x: 2x + 6 = 14",
+                "options": ["3", "4", "5", "6"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the slope of y = 3x + 2?",
+                "options": ["2", "3", "-3", "1"],
+                "answer": "B"
+            },
+            {
+                "question": "What is sin(90°)?",
+                "options": ["0", "1", "-1", "Undefined"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Math (College)",
+        "questions": [
+            {
+                "question": "What is the derivative of x²?",
+                "options": ["x", "2x", "x²", "2"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the value of e⁰?",
+                "options": ["0", "1", "e", "Undefined"],
+                "answer": "B"
+            },
+            {
+                "question": "Which series converges?",
+                "options": ["Σ1/n", "Σ1/n²", "Σn", "Σ2ⁿ"],
+                "answer": "B"
+            },
+            {
+                "question": "What is the integral of 1/x?",
+                "options": ["x", "ln|x|", "1/x²", "eˣ"],
+                "answer": "B"
+            },
+            {
+                "question": "What does a determinant of zero imply?",
+                "options": ["Invertible matrix", "Identity matrix", "Linearly dependent rows", "Orthogonal vectors"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Classical Literature",
+        "questions": [
+            {
+                "question": "Who wrote *The Odyssey*?",
+                "options": ["Virgil", "Sophocles", "Homer", "Plato"],
+                "answer": "C"
+            },
+            {
+                "question": "Which play features Oedipus?",
+                "options": ["Antigone", "Oedipus Rex", "Medea", "The Bacchae"],
+                "answer": "B"
+            },
+            {
+                "question": "Who wrote *The Aeneid*?",
+                "options": ["Homer", "Virgil", "Ovid", "Horace"],
+                "answer": "B"
+            },
+            {
+                "question": "Which epic includes Gilgamesh?",
+                "options": ["Iliad", "Mahabharata", "Epic of Gilgamesh", "Beowulf"],
+                "answer": "C"
+            },
+            {
+                "question": "Which language was *The Divine Comedy* originally written in?",
+                "options": ["Latin", "Italian", "French", "Greek"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "American Literature",
+        "questions": [
+            {
+                "question": "Who wrote *The Great Gatsby*?",
+                "options": ["Hemingway", "Fitzgerald", "Steinbeck", "Faulkner"],
+                "answer": "B"
+            },
+            {
+                "question": "Who wrote *To Kill a Mockingbird*?",
+                "options": ["Harper Lee", "Toni Morrison", "Flannery O'Connor", "Zora Neale Hurston"],
+                "answer": "A"
+            },
+            {
+                "question": "What novel features Captain Ahab?",
+                "options": ["The Old Man and the Sea", "Moby-Dick", "White Fang", "Heart of Darkness"],
+                "answer": "B"
+            },
+            {
+                "question": "Who wrote *The Catcher in the Rye*?",
+                "options": ["Salinger", "Kerouac", "Heller", "Updike"],
+                "answer": "A"
+            },
+            {
+                "question": "Which poet wrote *Leaves of Grass*?",
+                "options": ["Poe", "Frost", "Whitman", "Dickinson"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Sports",
+        "questions": [
+            {
+                "question": "How many players are on a soccer team on the field?",
+                "options": ["9", "10", "11", "12"],
+                "answer": "C"
+            },
+            {
+                "question": "Which sport uses a puck?",
+                "options": ["Lacrosse", "Hockey", "Curling", "Bandy"],
+                "answer": "B"
+            },
+            {
+                "question": "What country hosts Wimbledon?",
+                "options": ["USA", "France", "Australia", "UK"],
+                "answer": "D"
+            },
+            {
+                "question": "What is a perfect score in bowling?",
+                "options": ["200", "250", "300", "350"],
+                "answer": "C"
+            },
+            {
+                "question": "Which athlete has the most Olympic medals?",
+                "options": ["Usain Bolt", "Michael Phelps", "Simone Biles", "Carl Lewis"],
+                "answer": "B"
+            }
+        ]
+    },
+    {
+        "category": "Sitcoms",
+        "questions": [
+            {
+                "question": "Which sitcom features Central Perk?",
+                "options": ["Seinfeld", "Friends", "How I Met Your Mother", "Cheers"],
+                "answer": "B"
+            },
+            {
+                "question": "Who lives across the hall from Jerry in *Seinfeld*?",
+                "options": ["George", "Elaine", "Kramer", "Newman"],
+                "answer": "C"
+            },
+            {
+                "question": "Which sitcom is set in Scranton, PA?",
+                "options": ["Parks and Rec", "The Office", "Brooklyn Nine-Nine", "Community"],
+                "answer": "B"
+            },
+            {
+                "question": "Who is the mother in *How I Met Your Mother*?",
+                "options": ["Robin", "Lily", "Tracy", "Victoria"],
+                "answer": "C"
+            },
+            {
+                "question": "What bar is central to *Cheers*?",
+                "options": ["McLaren's", "Central Perk", "Cheers", "Monk's"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Human Anatomy",
+        "questions": [
+            {
+                "question": "How many lungs do humans have?",
+                "options": ["1", "2", "3", "4"],
+                "answer": "B"
+            },
+            {
+                "question": "Which bone is the longest?",
+                "options": ["Tibia", "Femur", "Humerus", "Fibula"],
+                "answer": "B"
+            },
+            {
+                "question": "Which organ filters blood?",
+                "options": ["Liver", "Kidney", "Heart", "Lung"],
+                "answer": "B"
+            },
+            {
+                "question": "What part of the brain controls balance?",
+                "options": ["Cerebrum", "Medulla", "Cerebellum", "Hypothalamus"],
+                "answer": "C"
+            },
+            {
+                "question": "What type of joint is the knee?",
+                "options": ["Ball-and-socket", "Pivot", "Hinge", "Gliding"],
+                "answer": "C"
+            }
+        ]
+    },
+    {
+        "category": "Celebrities",
+        "questions": [
+            {
+                "question": "Who starred as Iron Man?",
+                "options": ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
+                "answer": "B"
+            },
+            {
+                "question": "Which singer is known as 'Queen Bey'?",
+                "options": ["Rihanna", "Adele", "Beyoncé", "Taylor Swift"],
+                "answer": "C"
+            },
+            {
+                "question": "Who played Jack in *Titanic*?",
+                "options": ["Brad Pitt", "Leonardo DiCaprio", "Matt Damon", "Johnny Depp"],
+                "answer": "B"
+            },
+            {
+                "question": "Which celebrity founded Fenty Beauty?",
+                "options": ["Nicki Minaj", "Beyoncé", "Rihanna", "Doja Cat"],
+                "answer": "C"
+            },
+            {
+                "question": "Who hosted *The Tonight Show* for the longest time?",
+                "options": ["Jimmy Fallon", "Jay Leno", "Conan O'Brien", "Johnny Carson"],
+                "answer": "D"
+            }
+        ]
     }
 ]
