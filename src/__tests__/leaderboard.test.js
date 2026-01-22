@@ -1,46 +1,15 @@
-import { act } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import Leaderboard from "../Leaderboard";
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore, getPlayerOrder } from "./basicIntegration.test.js";
+import { addPlayers, refreshPage, getPlayerOrder, mockCategoryBank, useBankCategories } from "./testUtil.js";
 
-// Mock fetch for questions.json
 beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue({
-        json: () => Promise.resolve([
-            {
-                "category": "2000s Pop",
-                "questions": [
-                    {
-                        "question": "Q1",
-                        "options": ["A1", "B1", "C1", "D1"],
-                        "answer": "B"
-                    },
-                    {
-                        "question": "Q2",
-                        "options": ["A2", "B2", "C2", "D2"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q3",
-                        "options": ["A3", "B3", "C3", "D3"],
-                        "answer": "D"
-                    },
-                    {
-                        "question": "Q4",
-                        "options": ["A4", "B4", "C4", "D4"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q5",
-                        "options": ["A5", "B5", "C5", "D5"],
-                        "answer": "C"
-                    }
-                ]
-            },
-        ])
-    });
+    mockCategoryBank();
     localStorage.clear();
+});
+
+afterEach(() => {
+    jest.restoreAllMocks();
 });
 
 describe("Leaderboard", () => {
@@ -98,22 +67,19 @@ describe("Leaderboard tie", () => {
 test("Automatically takes you to leaderboard page when all questions have been answered", async () => {
     const {container} = render(<App />);
 
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
-
+    await useBankCategories();
     const playersToAdd = ["Alice", "Bob", "Carlos"];
     addPlayers(playersToAdd);
 
     const questions = container.getElementsByClassName("button");
-    expect(questions.length).toBe(5);
+    expect(questions.length).toBe(10);
 
     const playersInOrder = getPlayerOrder(container);
 
     // Answer each question
     for (let p=0; p<questions.length; p++) {
         fireEvent.click(questions[p]);
-        await screen.findByText("Q"+String(p+1));
+        await screen.findByText("Q"+String(Math.floor(p/2) + 1));
         const options = container.getElementsByClassName("option-label");
         expect(options.length).toBe(4);
         fireEvent.click(options[0]);
@@ -124,7 +90,7 @@ test("Automatically takes you to leaderboard page when all questions have been a
     const rows = container.getElementsByClassName("leaderboard-row");
     expect(rows.length).toBe(3);
 
-    const scores = [300, -300, -300];
+    const scores = [0, 0, -600];
 
     for (let i=0; i < rows.length; i++) {
         let row = rows[i];
@@ -146,19 +112,16 @@ test("Automatically takes you to leaderboard page when all questions have been a
 test("Play again button starts new game", async () => {
     const {container} = render(<App />);
 
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
-
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
     const questions = container.getElementsByClassName("button");
-    expect(questions.length).toBe(5);
+    expect(questions.length).toBe(10);
 
     // Answer each question
     for (let p=0; p<questions.length; p++) {
         fireEvent.click(questions[p]);
-        await screen.findByText("Q"+String(p+1));
+        await screen.findByText("Q"+String(Math.floor(p/2) + 1));
         const options = container.getElementsByClassName("option-label");
         expect(options.length).toBe(4);
         fireEvent.click(options[0]);

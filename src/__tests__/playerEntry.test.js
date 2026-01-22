@@ -1,13 +1,19 @@
-import { act} from "react";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react"; 
+import { render, screen, fireEvent } from "@testing-library/react"; 
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
+import { addPlayers, useBankCategories, mockCategoryBank } from "./testUtil.js";
+
+beforeEach(() => {
+    mockCategoryBank();
+    localStorage.clear();
+});
+
+afterEach(() => {
+    jest.restoreAllMocks();
+});
 
 test("Basic player entry", async () => {
     const {container} = render(<App />);
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
 
     addPlayers(["Alice", "Bob", "Carlos"]);
 
@@ -21,9 +27,7 @@ test("Basic player entry", async () => {
 
 test("Player names must be distinct", async () => {
     const {container} = render(<App />);
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
 
     addPlayers(["Alice", "Bob", "Bob"]);
 

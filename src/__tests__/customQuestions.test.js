@@ -1,13 +1,19 @@
 import { act} from "react";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react"; 
+import { render, screen, fireEvent } from "@testing-library/react"; 
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore } from "./basicIntegration.test.js";
+import { addPlayers, mockCategoryBank } from "./testUtil.js";
+
+beforeEach(() => {
+    localStorage.clear();
+});
 
 afterEach(() => {
     jest.restoreAllMocks();
 });
 
 test("Upload custom JSON questions file", async () => {
+    mockCategoryBank();
+
     await act(() => {
         render(<App />);
     });
@@ -87,7 +93,6 @@ test("Upload custom JSON questions file", async () => {
         fireEvent.change(fileInput, { target: { files: [file] } });
     });
 
-    // Click "Use JSON file" button if needed
     fireEvent.click(screen.getByText(/Use JSON file/i));
 
     addPlayers(["Alice", "Bob", "Carlos"]);

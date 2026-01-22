@@ -1,56 +1,23 @@
-import { act} from "react";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react"; 
 import App from "../App";
-import { addPlayers, refreshPage, expectPlayerScore, getPlayerOrder } from "./basicIntegration.test.js";
+import { mockCategoryBank, addPlayers, refreshPage, expectPlayerScore, getPlayerOrder, useBankCategories } from "./testUtil.js";
 
-// Mock fetch for questions.json
 beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue({
-        json: () => Promise.resolve([
-            {
-                "category": "2000s Pop",
-                "questions": [
-                    {
-                        "question": "Q1",
-                        "options": ["A1", "B1", "C1", "D1"],
-                        "answer": "B"
-                    },
-                    {
-                        "question": "Q2",
-                        "options": ["A2", "B2", "C2", "D2"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q3",
-                        "options": ["A3", "B3", "C3", "D3"],
-                        "answer": "D"
-                    },
-                    {
-                        "question": "Q4",
-                        "options": ["A4", "B4", "C4", "D4"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q5",
-                        "options": ["A5", "B5", "C5", "D5"],
-                        "answer": "C"
-                    }
-                ]
-            },
-        ])
-    });
+    mockCategoryBank();
     localStorage.clear();
+});
+
+afterEach(() => {
+    jest.restoreAllMocks();
 });
 
 test("50:50 works correctly", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");
@@ -93,12 +60,10 @@ test("50:50 works correctly", async () => {
 test("50:50 is per-player", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
@@ -158,12 +123,10 @@ test("50:50 is per-player", async () => {
 test("Lifeline 50:50 still used on next turn", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
@@ -219,12 +182,10 @@ test("Lifeline 50:50 still used on next turn", async () => {
 test("Lifeline 50:50 persists after page refresh", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
@@ -272,12 +233,10 @@ test("Lifeline 50:50 persists after page refresh", async () => {
 test("Refreshing page after answering question doesn't undo used 50:50", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
@@ -310,12 +269,10 @@ test("Refreshing page after answering question doesn't undo used 50:50", async (
 test("Phone-a-friend (offline) works correctly", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems300 = screen.getAllByText("300");
     fireEvent.click(gridItems300[0]);
@@ -342,18 +299,15 @@ test("Phone-a-friend (offline) works correctly", async () => {
 test("Penalties are personal to each player", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     const playerPenalties = new Map([
         ["Alice", "Penalty A"],
         ["Bob", "Penalty B"],
         ["Carlos", "Penalty C"]
     ]);
-
     addPlayers(["Alice", "Bob", "Carlos"], ["Penalty A", "Penalty B", "Penalty C"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
@@ -380,16 +334,14 @@ test("Penalties are personal to each player", async () => {
 test("Penalty lifeline works correctly", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     const playerPenalties = new Map([
         ["Alice", "Penalty A"],
         ["Bob", "Penalty B"]
     ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
@@ -428,16 +380,14 @@ test("Penalty lifeline works correctly", async () => {
 test("Penalty lifeline works multiple times per turn", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     const playerPenalties = new Map([
         ["Alice", "Penalty A"],
         ["Bob", "Penalty B"]
     ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
@@ -501,16 +451,14 @@ test("Penalty lifeline works multiple times per turn", async() => {
 test("Use penalty then 50:50", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     const playerPenalties = new Map([
         ["Alice", "Penalty A"],
         ["Bob", "Penalty B"]
     ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
@@ -560,16 +508,14 @@ test("Use penalty then 50:50", async() => {
 test("Use 50:50 then penalty", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     const playerPenalties = new Map([
         ["Alice", "Penalty A"],
         ["Bob", "Penalty B"]
     ]);
     addPlayers(["Alice", "Bob"], ["Penalty A", "Penalty B"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems100 = screen.getAllByText("100");
     fireEvent.click(gridItems100[0]);
@@ -620,12 +566,10 @@ test("Use 50:50 then penalty", async() => {
 test("Ask the audience lifeline", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");
@@ -683,12 +627,10 @@ test("Ask the audience lifeline", async() => {
 test("Ask the audience, refresh during 2nd person's poll", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");
@@ -751,12 +693,10 @@ test("Ask the audience, refresh during 2nd person's poll", async() => {
 test("Ask the audience, refresh during histogram", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");
@@ -836,12 +776,10 @@ test("Ask the audience, refresh during histogram", async() => {
 test("Clicking on answers when histogram is displayed does not change anything", async() => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
     addPlayers(["Alice", "Bob", "Carlos"]);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");

@@ -62,32 +62,35 @@ const QuestionsSelectionPage = ({
 
     return (
         <div className="questions-selection-page">
-            <h2>Upload Your Own Questions</h2>
-            <input type="file" accept=".json,application/json" onChange={handleFileChange} aria-label="jsonUpload" />
-            {error && <div className="error">{error}</div>}
-            <button onClick={() => {onQuestionsLoaded(fileContent)}}>Use JSON file</button>
-            <h2>OR Use Our Default Questions</h2>
-            <button onClick={useDefaultQuestions}>Load Default Questions</button>
-            <h2>OR Choose from a Bank of Categories (choose 2-6 categories)</h2>
-            <div className="bank-categories-list">
-                {bankCategories.map((category, idx) => (
-                    <button 
-                        key={idx}
-                        type="button"
-                        onClick={() => handleCategoryClick(category, idx)}
-                        className={selectedCategories.includes(category) ? "selected" : ""}
-                    >
-                        {category}
-                    </button>
-                ))}
+            
+            <div>
+                <h2>Choose from a Bank of Categories (choose 2-6 categories)</h2>
+                <div className="bank-categories-list">
+                    {bankCategories.map((category, idx) => (
+                        <button 
+                            key={idx}
+                            type="button"
+                            onClick={() => handleCategoryClick(category, idx)}
+                            className={selectedCategories.includes(category) ? "selected" : ""}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+                <button
+                    type="button"
+                    onClick={handleUseCategories}
+                    disabled={selectedCategories.length < 2 || selectedCategories.length > 6}
+                >
+                    Use Selected Categories
+                </button>
             </div>
-            <button
-                type="button"
-                onClick={handleUseCategories}
-                disabled={selectedCategories.length < 2 || selectedCategories.length > 6}
-            >
-                Use Selected Categories
-            </button>
+            <div>
+                <h2><b>OR</b> Upload Your Own Questions</h2>
+                <input type="file" accept=".json,application/json" onChange={handleFileChange} aria-label="jsonUpload" />
+                {error && <div className="error">{error}</div>}
+                <button onClick={() => {onQuestionsLoaded(fileContent)}}>Use JSON file</button>
+            </div>
         </div>
     );
 };

@@ -1,113 +1,37 @@
-import { act} from "react";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react"; 
+import { render, screen, fireEvent } from "@testing-library/react"; 
 import App from "../App";
+import { mockCategoryBank, addPlayers, refreshPage, expectPlayerScore, getPlayerOrder, useBankCategories } from "./testUtil";
 
-// Mock fetch for questions.json
+
 beforeEach(() => {
-    global.fetch = jest.fn().mockResolvedValue({
-        json: () => Promise.resolve([
-            {
-                "category": "2000s Pop",
-                "questions": [
-                    {
-                        "question": "Q1",
-                        "options": ["A1", "B1", "C1", "D1"],
-                        "answer": "B"
-                    },
-                    {
-                        "question": "Q2",
-                        "options": ["A2", "B2", "C2", "D2"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q3",
-                        "options": ["A3", "B3", "C3", "D3"],
-                        "answer": "D"
-                    },
-                    {
-                        "question": "Q4",
-                        "options": ["A4", "B4", "C4", "D4"],
-                        "answer": "A"
-                    },
-                    {
-                        "question": "Q5",
-                        "options": ["A5", "B5", "C5", "D5"],
-                        "answer": "C"
-                    }
-                ]
-            },
-        ])
-    });
+    mockCategoryBank();
     localStorage.clear();
 });
 
-export const addPlayers = (playerNames, playerPenalties) => {
-    if (!playerPenalties) {
-        playerPenalties = playerNames.map(name => `Do penalty`);
-    }
-
-    if (playerNames.length > 2) {
-        for (let i = 0; i < playerNames.length - 2; i++) {
-            fireEvent.click(screen.getByText(/Add Player/i));
-        }
-    }
-    const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);
-    for (let i = 0; i < playerNames.length; i++) {
-        fireEvent.change(playerInputs[i], { target: { value: playerNames[i] } });
-    }
-    const penaltyInputs = screen.getAllByPlaceholderText(/Penalty/);
-    for (let i = 0; i < playerNames.length; i++) {
-        fireEvent.change(penaltyInputs[i], { target: { value: playerPenalties[i]} });
-    }
-    fireEvent.click(screen.getByText(/Start Game/i));
-}
-
-export const refreshPage = async () => {
-    // Unmount the app (simulating a page reload) and then remount it
-    const { unmount } = render(<App />);
-    unmount();
-    cleanup();
-    await act(() => {
-        render(<App />);
-    });
-}
-
-export const expectPlayerScore = (playerName, expectedScore) => {
-    expect(screen.getByText(playerName)).toBeInTheDocument();
-    const player = screen.getByText(playerName);
-    const playerScore = player.nextElementSibling.textContent.trim();
-    expect(playerScore).toBe(expectedScore);
-}
-
-export const getPlayerOrder = (container) => {
-    const playerElts = container.getElementsByClassName("scoreboard-cell");
-    const playerOrder = [];
-    for (let elt of playerElts) {
-        const name = elt.querySelector(".scoreboard-name").textContent.trim();
-        playerOrder.push(name);
-    }
-    return playerOrder;
-}
+afterEach(() => {
+    jest.restoreAllMocks();
+});
 
 test("fetch mock works", async () => {
-    const response = await fetch("/questions.json");
+    const response = await fetch("/sampleCategories.json");
     const data = await response.json();
-    expect(data[0].category).toBe("2000s Pop");
+    expect(data[0].category).toBe("Geography");
+    expect(data[1].category).toBe("History");
+    expect(data.length).toBe(2);
 });
 
 test("add players, answer question correctly, update score, and grid updates", async () => {
     const {container} = render(<App />);
 
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    // Wait for bank categories to appear, then select them.
+    await useBankCategories();
 
     // Add two players
     const playersToAdd = ["Alice", "Bob"];
     addPlayers(playersToAdd);
 
     // Wait for grid to appear
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
 
     const playersInOrder = getPlayerOrder(container);
     expect(playersInOrder.length).toBe(playersToAdd.length);
@@ -115,7 +39,7 @@ test("add players, answer question correctly, update score, and grid updates", a
         expect(playersInOrder).toContain(name);
     }
 
-    // Click on 2000s Pop for 200 (row 2, col 0)
+    // Click on History for 200 (row 2, col 0)
     const gridItems = screen.getAllByText("200");
     fireEvent.click(gridItems[0]);
 
@@ -146,15 +70,13 @@ test("add players, answer question correctly, update score, and grid updates", a
 test("answer question incorrectly, update score", async () => {
     const {container} = render(<App />);
 
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
 
     const playersToAdd = ["Alice", "Bob"];
     addPlayers(playersToAdd);
 
     // Wait for grid to appear
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
 
     const playersInOrder = getPlayerOrder(container);
     expect(playersInOrder.length).toBe(playersToAdd.length);
@@ -162,7 +84,7 @@ test("answer question incorrectly, update score", async () => {
         expect(playersInOrder).toContain(name);
     }
 
-    // Click on 2000s Pop for 300 (row 2, col 0)
+    // Click on History for 300 (row 2, col 0)
     const gridItems = screen.getAllByText("300");
     fireEvent.click(gridItems[0]);
 
@@ -193,20 +115,18 @@ test("answer question incorrectly, update score", async () => {
 test("answer question, back to grid, game state persists after reload", async () => {
     const {container} = render(<App />);
 
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
 
     const playersToAdd = ["Alice", "Bob"];
     addPlayers(playersToAdd);
     // Wait for grid to appear
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     expect(playersInOrder.length).toBe(playersToAdd.length);
     for (let name of playersToAdd) {
         expect(playersInOrder).toContain(name);
     }
-    // Click on 2000s Pop for 300 (row 2, col 0)
+    // Click on History for 300 (row 2, col 0)
     const gridItems = screen.getAllByText("300");
     fireEvent.click(gridItems[0]);
     // Wait for question page
@@ -240,11 +160,10 @@ test("answer question, back to grid, game state persists after reload", async ()
 test("refresh while on question page before answering question", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
+
     addPlayers(["Alice", "Bob"]);
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
 
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
@@ -260,12 +179,11 @@ test("refresh while on question page before answering question", async () => {
 test("refresh while on question page after answering question", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
+
     const playersToAdd = ["Alice", "Bob"];
     addPlayers(playersToAdd);
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
     const gridItems = screen.getAllByText("400");
     fireEvent.click(gridItems[0]);
@@ -301,13 +219,12 @@ test("refresh while on question page after answering question", async () => {
 test("two players, two turns", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
+
     const playersToAdd = ["Alice", "Bob"];
     addPlayers(playersToAdd);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems400 = screen.getAllByText("400");
@@ -338,13 +255,12 @@ test("two players, two turns", async () => {
 test("three players", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
+
     const playersToAdd = ["Alice", "Bob", "Carlos"];
     addPlayers(playersToAdd);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
 
     const playersInOrder = getPlayerOrder(container);
     expect(playersInOrder.length).toBe(playersToAdd.length);
@@ -372,13 +288,12 @@ test("three players", async () => {
 test("three players, four turns", async () => {
     const {container} = render(<App />);
     
-    await act(() => {
-        fireEvent.click(screen.getByText(/Load Default Questions/i));
-    });
+    await useBankCategories();
+
     const playersToAdd = ["Alice", "Bob", "Carlos"];
     addPlayers(playersToAdd);
 
-    await screen.findByText((content) => content.includes("2000s Pop"));
+    await screen.findByText((content) => content.includes("History"));
     const playersInOrder = getPlayerOrder(container);
 
     const gridItems300 = screen.getAllByText("300");
