@@ -1,6 +1,7 @@
 {
   "name": "jeopardaire",
   "version": "0.1.0",
+  "homepage": "https://skwon19.github.io/jeopardaire",
   "private": true,
   "dependencies": {
     "cra-template": "1.2.0",
@@ -14,7 +15,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -37,6 +40,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
+    "gh-pages": "^6.3.0",
     "web-vitals": "^4.2.4"
   }
 }
