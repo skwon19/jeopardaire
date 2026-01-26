@@ -30,3 +30,91 @@
     font-size: 1rem;
     transition: background 0.2s, border 0.2s, font-weight 0.2s;
 }
+
+.upload-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.upload-help-btn {
+    margin-left: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.14);
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--light-text);
+}
+
+/* Modal styles */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    color: black;
+    max-width: 720px;
+    width: 90%;
+    border-radius: 8px;
+    padding: 16px 20px;
+    position: relative;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.code-box {
+    margin-top: 8px;
+    background: #1e1e1e;
+    color: #e6e6e6;
+    border-radius: 6px;
+    padding: 12px;
+    position: relative;
+    /* Allow the code box to shrink and scroll within the modal */
+    overflow: auto;
+    /* Reserve space for modal header and padding: modal max-height (90vh) minus header ~120px */
+    max-height: calc(90vh - 160px);
+}
+
+.code-box pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--light-text);
+}

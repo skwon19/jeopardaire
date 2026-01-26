@@ -60,9 +60,89 @@ const QuestionsSelectionPage = ({
         onQuestionsLoaded(selectedQuestions);
     }
 
+    // Modal state for upload instructions
+    const [showUploadModal, setShowUploadModal] = useState(false);
+
+    const exampleJson = JSON.stringify([
+        {
+            "category": "CATEGORY 1 NAME",
+            "questions": [
+                {
+                    "question": "100 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "B"
+                },
+                {
+                    "question": "200 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "A"
+                },
+                {
+                    "question": "300 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "C"
+                },
+                {
+                    "question": "400 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "B"
+                },
+                {
+                    "question": "500 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "D"
+                },
+            ]
+        },
+        {
+            "category": "CATEGORY 2 NAME",
+            "questions": [
+                {
+                    "question": "100 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "B"
+                },
+                {
+                    "question": "200 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "A"
+                },
+                {
+                    "question": "300 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "C"
+                },
+                {
+                    "question": "400 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "B"
+                },
+                {
+                    "question": "500 POINT QUESTION TEXT",
+                    "options": ["OPTION A", "OPTION B", "OPTION C", "OPTION D"],
+                    "answer": "D"
+                },
+            ]
+        }
+    ], null, 2);
+
+    const copyExampleToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(exampleJson);
+        } catch (e) {
+            // Fallback: create temporary textarea
+            const ta = document.createElement('textarea');
+            ta.value = exampleJson;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+        }
+    }
+
     return (
         <div className="questions-selection-page">
-            
+
             <div>
                 <h2>Choose from a Bank of Categories (choose 2-6 categories)</h2>
                 <div className="bank-categories-list">
@@ -86,11 +166,26 @@ const QuestionsSelectionPage = ({
                 </button>
             </div>
             <div>
-                <h2><b>OR</b> Upload Your Own Questions</h2>
+                <h2 className="upload-heading"><b>OR</b> Upload Your Own Questions
+                    <button type="button" className="upload-help-btn" aria-label="Upload format help" onClick={() => setShowUploadModal(true)}>?</button>
+                </h2>
                 <input type="file" accept=".json,application/json" onChange={handleFileChange} aria-label="jsonUpload" />
                 {error && <div className="error">{error}</div>}
                 <button disabled={fileContent===null} onClick={() => {onQuestionsLoaded(fileContent)}}>Use JSON file</button>
             </div>
+
+            {showUploadModal && (
+                <div className="modal-backdrop" role="dialog" aria-modal="true">
+                    <div className="modal">
+                        <button className="modal-close" onClick={() => setShowUploadModal(false)} aria-label="Close">×</button>
+                        <h3>Upload a JSON file containing 2-6 categories of 5 questions each, formatted as the example below:</h3>
+                        <div className="code-box">
+                            <button className="copy-btn" onClick={copyExampleToClipboard} aria-label="Copy example">Copy 📋</button>
+                            <pre>{exampleJson}</pre>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
