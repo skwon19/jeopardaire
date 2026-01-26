@@ -578,6 +578,7 @@ test("Ask the audience lifeline", async() => {
     await screen.findByText("Q3");
     let lifelineButton = screen.getByText(/Ask the Audience/i);
     fireEvent.click(lifelineButton);
+    fireEvent.click(screen.getByText(/Continue/));
 
     // Expect AudiencePoll page for player 2
     await screen.findByText(playersInOrder[1]);
@@ -639,6 +640,7 @@ test("Ask the audience, refresh during 2nd person's poll", async() => {
     await screen.findByText("Q3");
     let lifelineButton = screen.getByText(/Ask the Audience/i);
     fireEvent.click(lifelineButton);
+    fireEvent.click(screen.getByText(/Continue/));
 
     // Expect AudiencePoll page for player 2
     await screen.findByText(playersInOrder[1]);
@@ -705,6 +707,7 @@ test("Ask the audience, refresh during histogram", async() => {
     await screen.findByText("Q3");
     let lifelineButton = screen.getByText(/Ask the Audience/i);
     fireEvent.click(lifelineButton);
+    fireEvent.click(screen.getByText(/Continue/));
 
     // Expect AudiencePoll page for player 2
     await screen.findByText(playersInOrder[1]);
@@ -788,6 +791,7 @@ test("Clicking on answers when histogram is displayed does not change anything",
     await screen.findByText("Q3");
     let lifelineButton = screen.getByText(/Ask the Audience/i);
     fireEvent.click(lifelineButton);
+    fireEvent.click(screen.getByText(/Continue/));
 
     // Expect AudiencePoll page for player 2
     await screen.findByText(playersInOrder[1]);

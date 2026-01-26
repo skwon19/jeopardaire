@@ -84,6 +84,10 @@ function App() {
         const saved = localStorage.getItem("showHistogram");
         return saved ? JSON.parse(saved) : false;
     });
+    const [askAudienceInstructionsSeen, setAskAudienceInstructionsSeen] = useState(() => {
+        const saved = localStorage.getItem("askAudienceInstructionsSeen");
+        return saved ? JSON.parse(saved) : false;
+    })
 
     useEffect(() => { // After questions load, populate seenQuestions, selectAnswer, feedbacks if empty
         if (headers.length > 0) {
@@ -169,6 +173,10 @@ function App() {
         localStorage.setItem("showHistogram", JSON.stringify(showHistogram));
     }, [showHistogram]);
 
+    useEffect(() => {
+        localStorage.setItem("askAudienceInstructionsSeen", JSON.stringify(askAudienceInstructionsSeen));
+    }, [askAudienceInstructionsSeen]);
+
     // Decide which view to show based on state
     useEffect(() => {
         if (questions.length === 0) {
@@ -242,6 +250,7 @@ function App() {
         setAudiencePollIndex(0);
         setAudiencePollAnswers(Array(4).fill(0));
         setView("audiencePoll");
+        setAskAudienceInstructionsSeen(false);
     }
 
     const handleAudiencePollClose = () => {
@@ -249,6 +258,10 @@ function App() {
         setAudiencePollIndex(0);
         setAudiencePollAnswers(Array(4).fill(0));
         setView("question");
+    }
+
+    const closeAudiencePollInstructions = () => {
+        setAskAudienceInstructionsSeen(true);
     }
 
     const initializePlayers = (playerObjs) => {
@@ -334,6 +347,8 @@ function App() {
                         onFinishPoll={handleAudiencePollClose}
                         showHistogram={showHistogram}
                         setShowHistogram={setShowHistogram}
+                        instructionsSeen={askAudienceInstructionsSeen}
+                        closeInstructions={closeAudiencePollInstructions}
                     />
                 )}
                 {view === "leaderboard" && (
