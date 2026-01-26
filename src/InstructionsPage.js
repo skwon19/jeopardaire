@@ -15,7 +15,7 @@ const InstructionsPage = () => {
             </p>
             <p>
                 Next, enter the players' names. Each player must also enter a “penalty” action, 
-                something that is somewhat difficult but able to be done repeatedly, 
+                something that is somewhat difficult but can be done repeatedly, 
                 e.g. “Do 10 push-ups,” “Eat a spicy pepper,” “Tell a secret about yourself.” 
                 On your turn, you may always perform your penalty in order to remove an incorrect answer choice 
                 (more details under “lifelines” below).
