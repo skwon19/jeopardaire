@@ -76,8 +76,9 @@ export const addPlayers = (playerNames, playerPenalties) => {
     }
 
     if (playerNames.length > 2) {
+        const addPlayerBtn = document.getElementsByClassName("add-player-btn")[0];
         for (let i = 0; i < playerNames.length - 2; i++) {
-            fireEvent.click(screen.getByText(/Add Player/i));
+            fireEvent.click(addPlayerBtn);
         }
     }
     const playerInputs = screen.getAllByPlaceholderText(/Player \d+/);

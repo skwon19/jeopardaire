@@ -29,6 +29,14 @@ const PlayerEntryPage = ({ initializePlayers }) => {
         setPlayers(updated);
     };
 
+    const removePlayer = (idx) => {
+        const updated = players.filter((_, i) => i !== idx);
+        if (updated.length < 2) { // Must have at least 2 players
+            updated.push({ name: "", penalty: "" });
+        }
+        setPlayers(updated);
+    };
+
     const addPlayer = () => setPlayers([...players, { name: "", penalty: "" }]);
 
     const handleSubmit = (e) => {
@@ -61,27 +69,40 @@ const PlayerEntryPage = ({ initializePlayers }) => {
         <div className="player-entry-page">
             <h2>Enter Player Names and Penalty Actions</h2>
             <form onSubmit={handleSubmit}>
-                {players.map((name, idx) => (
-                    <div key={idx} style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                        <input
-                            type="text"
-                            value={players.name}
-                            onChange={e => handleChange(idx, "name", e.target.value)}
-                            placeholder={`Player ${idx + 1}`}
-                            required
-                        />
-                        <input
-                            type="text"
-                            value={players.penalty}
-                            onChange={e => handleChange(idx, "penalty", e.target.value)}
-                            placeholder="Penalty action (e.g. Do 10 push-ups)"
-                            required
-                            style={{ width: "350px" }}
-                        />
+                {players.map((p, idx) => (
+                    <div key={idx} className="player-row">
+                        <div className="player-row-inputs">
+                            <input
+                                type="text"
+                                className="player-name-input"
+                                value={p.name}
+                                onChange={e => handleChange(idx, "name", e.target.value)}
+                                placeholder={`Player ${idx + 1}`}
+                                required
+                            />
+                            <input
+                                type="text"
+                                className="player-penalty-input"
+                                value={p.penalty}
+                                onChange={e => handleChange(idx, "penalty", e.target.value)}
+                                placeholder="Penalty action (e.g. Do 10 push-ups)"
+                                required
+                            />
+                        </div>
+                        <button type="button" className="remove-player-btn" onClick={() => removePlayer(idx)} aria-label={`Remove player ${idx+1}`}>
+                            <img src="/trash-icon.png" alt="Remove" />
+                        </button>
                     </div>
                 ))}
-                <button type="button" onClick={addPlayer}>Add Player</button>
-                <button type="submit">Start Game</button>
+
+                <div className="player-entry-actions">
+                    <button type="button" className="add-player-btn" onClick={addPlayer} aria-label="Add player">+</button>
+                </div>
+
+                <div className="player-entry-actions">
+                    <button type="submit" className="start-game-btn">Start Game</button>
+                </div>
+
                 {error && <div className="error">{error}</div>}
             </form>
         </div>

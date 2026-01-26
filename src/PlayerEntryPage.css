@@ -7,3 +7,77 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     color: var(--light-text);
 }
+
+.player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border-radius: 999px; /* pill */
+    background: #1e6bd8;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.player-row-inputs {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.player-name-input {
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: white;
+}
+
+.player-penalty-input {
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+    width: 320px;
+    background: white;
+}
+
+.remove-player-btn {
+    background: transparent;
+    border: none;
+    padding: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-player-btn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.player-entry-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.add-player-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(180deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-game-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--selected-bg);
+    border: var(--selected-border);
+}
