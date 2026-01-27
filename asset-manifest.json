@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/jeopardaire/static/css/main.75c90911.css",
-    "main.js": "/jeopardaire/static/js/main.0abc32f7.js",
+    "main.js": "/jeopardaire/static/js/main.84c29f35.js",
     "static/js/488.56cd8837.chunk.js": "/jeopardaire/static/js/488.56cd8837.chunk.js",
     "index.html": "/jeopardaire/index.html",
     "main.75c90911.css.map": "/jeopardaire/static/css/main.75c90911.css.map",
-    "main.0abc32f7.js.map": "/jeopardaire/static/js/main.0abc32f7.js.map",
+    "main.84c29f35.js.map": "/jeopardaire/static/js/main.84c29f35.js.map",
     "488.56cd8837.chunk.js.map": "/jeopardaire/static/js/488.56cd8837.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.75c90911.css",
-    "static/js/main.0abc32f7.js"
+    "static/js/main.84c29f35.js"
   ]
 }
