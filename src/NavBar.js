@@ -14,7 +14,7 @@ const NavBar = ({ view}) => {
     return (
         <header className="nav-bar">
             <div className="nav-left">
-                <a href="/" className="home">
+                <a href={process.env.PUBLIC_URL + '/'} className="home">
                     <span className="nav-title">JEOPARDAIRE</span>
                 </a>
             </div>
@@ -25,7 +25,7 @@ const NavBar = ({ view}) => {
                     </div>
                 )}
 
-                <a href="/help" className="help-link" aria-label="Help">
+                <a href={process.env.PUBLIC_URL + '/help'} className="help-link" aria-label="Help">
                     <span className="help-icon">?</span>
                 </a>
             </div>
