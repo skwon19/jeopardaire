@@ -21,7 +21,7 @@ const NavBar = ({ view}) => {
             <div className="nav-right">
                 {abandonableViews.has(view) && (
                     <div className="exit-container" onClick={verifyAbandonGame}>
-                        <input type="image" className="abandon-game-btn" src="/exit-icon-white.png" />
+                        <input type="image" className="abandon-game-btn" src={process.env.PUBLIC_URL + "/exit-icon-white.png"} />
                     </div>
                 )}
 

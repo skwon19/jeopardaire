@@ -90,7 +90,7 @@ const PlayerEntryPage = ({ initializePlayers }) => {
                             />
                         </div>
                         <button type="button" className="remove-player-btn" onClick={() => removePlayer(idx)} aria-label={`Remove player ${idx+1}`}>
-                            <img src="/trash-icon.png" alt="Remove" />
+                            <img src={process.env.PUBLIC_URL + "/trash-icon.png"} alt="Remove" />
                         </button>
                     </div>
                 ))}

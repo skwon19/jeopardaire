@@ -27,7 +27,7 @@ const QuestionsSelectionPage = ({
     };
 
     const getBankQuestions = async () => { // Get all preset questions from the bank
-        const response = await fetch("/sampleCategories.json");
+    const response = await fetch(process.env.PUBLIC_URL + "/sampleCategories.json");
         const data = await response.json();
         setBankQuestions(data);
         const categoryNames = data.map(item => item.category);
