@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex">
+    <meta http-equiv="refresh" content="0; url=%PUBLIC_URL%/" />
+    <script>
+      // SPA fallback for GitHub Pages: attempt to fetch index.html from %PUBLIC_URL%
+      (function () {
+        var publicUrl = '%PUBLIC_URL%';
+        var indexPath = publicUrl + '/index.html';
+        try {
+          fetch(indexPath).then(function (res) {
+            return res.text();
+          }).then(function (html) {
+            document.open();
+            document.write(html);
+            document.close();
+          }).catch(function () {
+            // If fetching fails, redirect to the repo root
+            location.replace(publicUrl + '/');
+          });
+        } catch (e) {
+          location.replace(publicUrl + '/');
+        }
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
