@@ -1,30 +1,35 @@
 <!doctype html>
 <html>
-  <head>
+    <head>
     <meta charset="utf-8" />
     <meta name="robots" content="noindex">
-    <meta http-equiv="refresh" content="0; url=%PUBLIC_URL%/" />
-    <script>
-      // SPA fallback for GitHub Pages: attempt to fetch index.html from %PUBLIC_URL%
-      (function () {
-        var publicUrl = '%PUBLIC_URL%';
-        var indexPath = publicUrl + '/index.html';
-        try {
-          fetch(indexPath).then(function (res) {
-            return res.text();
-          }).then(function (html) {
-            document.open();
-            document.write(html);
-            document.close();
-          }).catch(function () {
-            // If fetching fails, redirect to the repo root
-            location.replace(publicUrl + '/');
-          });
-        } catch (e) {
-          location.replace(publicUrl + '/');
-        }
-      })();
-    </script>
-  </head>
-  <body></body>
+        <script>
+            // SPA fallback for GitHub Pages: compute the repo base from the current path
+            // and attempt to fetch its index.html so the client router can handle the route.
+            (function () {
+                try {
+                    var pathname = location.pathname || '/';
+                    // Extract the first path segment (e.g. '/jeopardaire' from '/jeopardaire/help')
+                    var match = pathname.match(/^\/[^\/]+/);
+                    var base = match ? match[0] : '';
+                    var indexPath = base + '/index.html';
+
+                    fetch(indexPath).then(function (res) {
+                        if (!res.ok) throw new Error('index not found');
+                        return res.text();
+                    }).then(function (html) {
+                        document.open();
+                        document.write(html);
+                        document.close();
+                    }).catch(function () {
+                        // If fetching fails, redirect to the computed base or root
+                        location.replace((base || '/') + '');
+                    });
+                } catch (e) {
+                    location.replace('/');
+                }
+            })();
+        </script>
+    </head>
+    <body></body>
 </html>
